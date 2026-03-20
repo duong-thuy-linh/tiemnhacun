@@ -58,7 +58,7 @@
 <div class="container">
     <div class="header">
         <img id="avatar-top" src="avatar.jpg" onerror="this.src='https://via.placeholder.com/90/ff6699/ffffff?text=Cún'">
-        <h1>Tiệm Nhà Cún ❤️</h1>
+        <h1>Tiệm PhotoBooth Nhà Cún ❤️</h1>
     </div>
     <div class="progress-bar">
         <div class="progress-line"></div>
@@ -125,7 +125,7 @@
 
 <script>
     let max = 1, layout = 'v', filter = 'none', photos = [], bg = '#ffffff';
-    const scaleFactor = 4; // Tăng chất lượng ảnh gấp 4 lần
+    const scaleFactor = 4; 
     const video = document.getElementById('video'), canvas = document.getElementById('canvas'), ctx = canvas.getContext('2d');
     const stickerLayer = document.getElementById('sticker-layer');
 
@@ -211,7 +211,6 @@
         let baseW = 320, baseH;
         if(layout === 'g') { baseW = 340; baseH = 480; } 
         else { baseH = (240 + 15) * max + 65; }
-        
         canvas.width = baseW * scaleFactor;
         canvas.height = baseH * scaleFactor;
         stickerLayer.style.width = baseW + "px"; 
@@ -248,7 +247,8 @@
     function drawCunText() {
         ctx.save(); 
         ctx.font = `bold italic ${18 * scaleFactor}px Quicksand`; 
-        ctx.fillStyle = "#ff6699"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+        ctx.fillStyle = "#ff0000"; // MÀU ĐỎ ĐÃ ĐƯỢC CẬP NHẬT TẠI ĐÂY
+        ctx.textAlign = "center"; ctx.textBaseline = "middle";
         ctx.fillText("Tiệm PhotoBooth Nhà Cún ❤️", canvas.width / 2, canvas.height - (35 * scaleFactor)); 
         ctx.restore();
     }
@@ -302,5 +302,7 @@
     }
     function dl() { const a = document.createElement('a'); a.download = 'tiemnhacun_hd.png'; a.href = canvas.toDataURL('image/png', 1.0); a.click(); }
 </script>
+</body>
+</html>
 </body>
 </html>
