@@ -12,15 +12,18 @@
         .header { padding: 20px; text-align: center; }
         #avatar-top { width: 85px; height: 85px; border-radius: 50%; border: 4px solid var(--pink-light); object-fit: cover; margin-bottom: 8px; display: block; margin-left: auto; margin-right: auto; }
         .header h1 { color: var(--pink-main); font-size: 22px; margin: 0; font-style: italic; }
+        
         .progress-bar { display: flex; justify-content: space-between; padding: 10px 40px 20px; position: relative; }
         .step { display: flex; flex-direction: column; align-items: center; z-index: 2; font-size: 10px; color: #ccc; font-weight: 700; }
         .step-circle { width: 22px; height: 22px; border-radius: 50%; background: #eee; display: flex; justify-content: center; align-items: center; margin-bottom: 4px; color: white; }
         .step.active .step-circle { background: var(--pink-main); box-shadow: 0 3px 8px rgba(255, 102, 153, 0.3); }
         .step.active { color: var(--pink-main); }
         .progress-line { position: absolute; top: 22px; left: 55px; right: 55px; height: 2px; background: #eee; z-index: 1; }
+
         .screen { display: none; padding: 0 20px; flex-direction: column; animation: fadeIn 0.3s ease; }
         .active-screen { display: flex; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
         h2 { font-size: 18px; color: #444; text-align: center; margin-bottom: 15px; }
         .card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .card { background: #fff; border: 2px solid #f0f0f0; border-radius: 18px; padding: 12px 10px; cursor: pointer; text-align: center; box-shadow: 0 4px 0 #eee; transition: 0.2s; }
@@ -28,44 +31,56 @@
         .card-icon { background: var(--pink-light); width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 16px; margin: 0 auto 8px; font-weight: bold; color:var(--pink-main); }
         .card strong { font-size: 14px; display: block; color: #333; margin-bottom: 2px; }
         .card small { font-size: 10px; color: #888; font-weight: 600; }
+
         #video-container { width: 100%; aspect-ratio: 3/4; background: #000; border-radius: 20px; overflow: hidden; position: relative; }
         video { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); }
         #countdown { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 80px; color: white; font-weight: 700; text-shadow: 0 0 15px rgba(0,0,0,0.5); }
+        
+        .upload-area { margin-top: 15px; display: flex; flex-direction: column; gap: 10px; }
+        .btn-upload { background: white; color: var(--pink-main); border: 2px dashed var(--pink-main); padding: 12px; border-radius: 15px; font-weight: 700; cursor: pointer; text-align: center; }
+
         #result-wrapper { position: relative; width: fit-content; margin: 0 auto 20px; }
         canvas { max-width: 100%; height: auto; border-radius: 5px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); display: block; }
         #sticker-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; overflow: hidden; }
         .draggable-item { position: absolute; cursor: move; pointer-events: auto; touch-action: none; z-index: 100; user-select: none; white-space: nowrap; }
         .draggable-emoji { font-size: 35px; }
         .draggable-text { font-size: 18px; font-weight: 700; color: #333; background: rgba(255,255,255,0.8); padding: 4px 10px; border-radius: 8px; border: 1px solid #ff6699; }
+
         .tool-section { width: 100%; margin-top: 15px; overflow: hidden; }
         .tool-title { font-size: 13px; font-weight: 700; color: #666; margin-bottom: 5px; padding-left: 5px; }
         .scroll-box { display: flex; gap: 12px; overflow-x: auto !important; padding: 10px 5px 15px; -webkit-overflow-scrolling: touch; scrollbar-width: thin; scrollbar-color: var(--pink-main) transparent; }
         .scroll-box::-webkit-scrollbar { height: 4px; display: block; }
         .scroll-box::-webkit-scrollbar-thumb { background: var(--pink-main); border-radius: 10px; }
+        
         .color-dot { width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0; border: 3px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.15); cursor: pointer; }
         .emoji-item { font-size: 35px; flex-shrink: 0; cursor: pointer; padding: 5px; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.1)); }
+
         .text-input-group { display: flex; gap: 8px; margin-bottom: 10px; }
         #user-text { flex: 1; padding: 12px; border: 2px solid #eee; border-radius: 15px; outline: none; font-family: inherit; }
         .btn-add-text { background: var(--pink-main); color: white; border: none; padding: 0 18px; border-radius: 15px; font-weight: 700; }
+
         .footer { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 450px; padding: 15px 20px; background: white; z-index: 1000; border-top: 1px solid #f0f0f0; box-sizing: border-box; }
         .btn-next { background: linear-gradient(135deg, #ff8fa3, #ff6699); color: white; border: none; width: 100%; padding: 16px; border-radius: 30px; font-size: 17px; font-weight: 700; cursor: pointer; box-shadow: 0 5px 0 #d64574; }
         .btn-next:active { transform: translateY(3px); box-shadow: 0 2px 0 #d64574; }
     </style>
 </head>
 <body>
+
 <div class="container">
     <div class="header">
         <img id="avatar-top" src="avatar.jpg" onerror="this.src='https://via.placeholder.com/90/ff6699/ffffff?text=Cún'">
         <h1>Tiệm Nhà Cún ❤️</h1>
     </div>
+
     <div class="progress-bar">
         <div class="progress-line"></div>
         <div id="s1" class="step active"><div class="step-circle">1</div>Khung</div>
         <div id="s2" class="step"><div class="step-circle">2</div>Màu</div>
-        <div id="s3" class="step"><div class="step-circle">3</div>Chụp</div>
+        <div id="s3" class="step"><div class="step-circle">3</div>Ảnh</div>
         <div id="s4" class="step"><div class="step-circle">4</div>Decor</div>
         <div id="s5" class="step"><div class="step-circle">5</div>Lưu</div>
     </div>
+
     <div id="screen-1" class="screen active-screen">
         <h2>Chọn kiểu khung hình</h2>
         <div class="card-grid">
@@ -77,6 +92,7 @@
         </div>
         <div class="footer"><button class="btn-next" onclick="go(2)">Tiếp theo ➔</button></div>
     </div>
+
     <div id="screen-2" class="screen">
         <h2>Chọn Filter màu ảnh</h2>
         <div class="card-grid" style="grid-template-columns: 1fr 1fr 1fr;">
@@ -87,20 +103,31 @@
             <div class="card" onclick="setF(this, 'hue-rotate(-20deg) saturate(0.8)')">❄️<strong>Cold</strong></div>
             <div class="card" onclick="setF(this, 'contrast(1.3) brightness(1.1) saturate(1.2)')">💫<strong>Lofi</strong></div>
         </div>
-        <div class="footer"><button class="btn-next" onclick="startCamera()">Vào phòng chụp 📸</button></div>
+        <div class="footer"><button class="btn-next" onclick="go(3); startCamera();">Tiếp theo ➔</button></div>
     </div>
+
     <div id="screen-3" class="screen">
         <div id="video-container"><video id="video" autoplay playsinline></video><div id="countdown"></div></div>
-        <h2 id="pc" style="margin-top:15px; color:var(--pink-main); font-size:24px;">0 / 1</h2>
+        <h2 id="pc" style="margin-top:10px; color:var(--pink-main);">0 / 1</h2>
+        
+        <div class="upload-area">
+            <label class="btn-upload">
+                Tải ảnh từ máy (Up đủ <span id="max-up">1</span> ảnh)
+                <input type="file" id="file-input" accept="image/*" multiple hidden onchange="handleUpload(this)">
+            </label>
+        </div>
+
         <div class="footer"><button class="btn-next" id="capBtn" onclick="takeP()">Bấm để chụp 📸</button></div>
     </div>
+
     <div id="screen-4" class="screen">
         <div id="result-wrapper"><canvas id="canvas"></canvas><div id="sticker-layer"></div></div>
-        <div class="tool-section"><div class="text-input-group"><input type="text" id="user-text" placeholder="Viết chữ lên ảnh..."><button class="btn-add-text" onclick="addText()">Thêm</button></div></div>
-        <div class="tool-section"><div class="tool-title">🎨 Màu khung (Vuốt sang)</div><div class="scroll-box" id="cBar"></div></div>
-        <div class="tool-section"><div class="tool-title">🎀 Sticker (Vuốt sang)</div><div class="scroll-box" id="sBar"></div></div>
+        <div class="tool-section"><div class="text-input-group"><input type="text" id="user-text" placeholder="Viết chữ..."><button class="btn-add-text" onclick="addText()">Thêm</button></div></div>
+        <div class="tool-section"><div class="tool-title">🎨 Màu khung</div><div class="scroll-box" id="cBar"></div></div>
+        <div class="tool-section"><div class="tool-title">🎀 Sticker</div><div class="scroll-box" id="sBar"></div></div>
         <div class="footer"><button class="btn-next" onclick="done()">Hoàn thành ✨</button></div>
     </div>
+
     <div id="screen-5" class="screen" style="align-items:center">
         <h2>Xinh quá đi! ❤️</h2>
         <div id="final-p" style="width:230px; border-radius:15px; overflow:hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.15);"></div>
@@ -116,6 +143,7 @@
     const video = document.getElementById('video'), canvas = document.getElementById('canvas'), ctx = canvas.getContext('2d');
     const stickerLayer = document.getElementById('sticker-layer');
 
+    // Init Colors & Stickers
     const bgs = ['#ffffff','#ffd1dc','#d1e8ff','#e2d1ff','#fff9c4','#c8e6c9','#333333','#ffccbc','#cfd8dc','#ff8a80','#80cbc4','#ffeb3b','#00bcd4'];
     bgs.forEach(c => {
         const d = document.createElement('div'); d.className='color-dot'; d.style.background=c;
@@ -132,6 +160,7 @@
         document.querySelectorAll('#screen-1 .card').forEach(c=>c.classList.remove('selected'));
         el.classList.add('selected'); max = n; layout = t;
         document.getElementById('pc').innerText = `0 / ${max}`;
+        document.getElementById('max-up').innerText = max;
     }
     function setF(el, f) {
         document.querySelectorAll('#screen-2 .card').forEach(c=>c.classList.remove('selected'));
@@ -141,16 +170,36 @@
         document.querySelectorAll('.screen').forEach(e=>e.classList.remove('active-screen'));
         document.getElementById('screen-'+s).classList.add('active-screen');
         for(let i=1; i<=5; i++) {
-            const stepEl = document.getElementById('s'+i);
-            if(stepEl) stepEl.classList.toggle('active', i<=s);
+            const st = document.getElementById('s'+i); if(st) st.classList.toggle('active', i<=s);
         }
     }
+
     async function startCamera() {
         try {
             const stream = await navigator.mediaDevices.getUserMedia({video: { facingMode: "user" }});
-            video.srcObject = stream; go(3);
-        } catch (e) { alert("Vui lòng cấp quyền camera!"); }
+            video.srcObject = stream;
+        } catch (e) { console.log("Camera không khả dụng"); }
     }
+
+    // CHỨC NĂNG UP ẢNH
+    function handleUpload(input) {
+        const files = Array.from(input.files).slice(0, max);
+        photos = [];
+        let count = 0;
+        files.forEach(file => {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                photos.push(e.target.result);
+                count++;
+                if(count === files.length) {
+                    if(photos.length < max) alert(`Bạn cần up đủ ${max} ảnh!`);
+                    else { setup(); go(4); }
+                }
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+
     function takeP() {
         if(photos.length < max) {
             let i = 3; const cd = document.getElementById('countdown');
@@ -159,7 +208,8 @@
                 cd.innerText = i;
                 if(i-- <= 0) {
                     clearInterval(t); cd.innerText = "";
-                    const tmp = document.createElement('canvas'); tmp.width = video.videoWidth; tmp.height = video.videoHeight;
+                    const tmp = document.createElement('canvas'); 
+                    tmp.width = video.videoWidth; tmp.height = video.videoHeight;
                     const tctx = tmp.getContext('2d');
                     if(filter !== 'none') tctx.filter = filter;
                     tctx.translate(tmp.width,0); tctx.scale(-1,1);
@@ -172,6 +222,7 @@
             }, 800);
         }
     }
+
     function setup() {
         if(layout === 'g'){ canvas.width = 340; canvas.height = 480; } 
         else { canvas.width = 320; canvas.height = (240 + 15) * max + 65; }
@@ -179,11 +230,7 @@
         stickerLayer.style.height = canvas.height + "px";
         draw();
     }
-    function drawTiemNhaCunText() {
-        ctx.save(); ctx.font = "bold italic 18px Quicksand"; ctx.fillStyle = "#ff6699";
-        ctx.textAlign = "center"; ctx.textBaseline = "middle";
-        ctx.fillText("Cún Yêu Bạn ❤️", canvas.width / 2, canvas.height - 35); ctx.restore();
-    }
+
     function draw() {
         ctx.fillStyle = bg; ctx.fillRect(0,0,canvas.width,canvas.height);
         let loaded = 0;
@@ -198,15 +245,21 @@
                     w = canvas.width - pad*2; h = 240; x = pad; y = pad + i*(h+15);
                 }
                 ctx.save(); ctx.beginPath(); ctx.roundRect(x, y, w, h, r); ctx.clip();
-                // FIX LỖI BÓP MẶT LAPTOP (SMART CROP)
                 let sR = Math.max(w / img.width, h / img.height);
                 let nW = img.width * sR, nH = img.height * sR;
                 ctx.drawImage(img, x + (w - nW) / 2, y + (h - nH) / 2, nW, nH);
                 ctx.restore();
-                if(++loaded === photos.length) drawTiemNhaCunText();
+                if(++loaded === photos.length) drawCunText();
             };
         });
     }
+
+    function drawCunText() {
+        ctx.save(); ctx.font = "bold italic 18px Quicksand"; ctx.fillStyle = "#ff6699";
+        ctx.textAlign = "center"; ctx.textBaseline = "middle";
+        ctx.fillText("Cún Yêu Bạn ❤️", canvas.width / 2, canvas.height - 35); ctx.restore();
+    }
+
     function makeDraggable(el) {
         const move = (ev) => {
             ev.preventDefault(); const rect = stickerLayer.getBoundingClientRect();
@@ -221,11 +274,13 @@
             document.addEventListener('mouseup', stop); document.addEventListener('touchend', stop);
         };
     }
+
     function addS(e) {
         const s = document.createElement('span'); s.className = 'draggable-item draggable-emoji';
         s.innerText = e; s.style.left = '50px'; s.style.top = '50px';
         makeDraggable(s); stickerLayer.appendChild(s);
     }
+
     function addText() {
         const txt = document.getElementById('user-text').value; if(!txt) return;
         const s = document.createElement('span'); s.className = 'draggable-item draggable-text';
@@ -233,6 +288,7 @@
         makeDraggable(s); stickerLayer.appendChild(s);
         document.getElementById('user-text').value = ''; 
     }
+
     function done() {
         document.querySelectorAll('.draggable-item').forEach(el => {
             const x = parseInt(el.style.left), y = parseInt(el.style.top);
@@ -242,12 +298,14 @@
                 ctx.font = "bold 18px Quicksand"; ctx.fillStyle = "#333"; ctx.textBaseline = "top"; ctx.fillText(el.innerText, x, y);
             }
         });
-        drawTiemNhaCunText();
+        drawCunText();
         const final = document.createElement('img'); final.src = canvas.toDataURL('image/png'); final.style.width = "100%";
         document.getElementById('final-p').innerHTML = ""; document.getElementById('final-p').appendChild(final);
         go(5);
     }
     function dl() { const a = document.createElement('a'); a.download = 'tiemnhacun.png'; a.href = canvas.toDataURL(); a.click(); }
 </script>
+</body>
+</html>
 </body>
 </html>
