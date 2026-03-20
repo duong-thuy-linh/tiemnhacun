@@ -10,17 +10,7 @@
         body { margin: 0; font-family: 'Quicksand', sans-serif; background: var(--bg-body); display: flex; justify-content: center; min-height: 100vh; touch-action: manipulation; overflow-x: hidden; }
         .container { width: 100%; max-width: 450px; background: white; min-height: 100vh; position: relative; box-shadow: 0 0 30px rgba(0,0,0,0.05); padding-bottom: 220px; }
         
-        /* HIỆU ỨNG NÚT LỒI CŨ */
-        .btn-next, #capBtn, #finalBtn {
-            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            position: relative; cursor: pointer;
-        }
-        .btn-next:active, #capBtn:active, #finalBtn:active { 
-            transform: scale(1.1) translateY(-5px); 
-            box-shadow: 0 10px 20px rgba(255, 102, 153, 0.3);
-        }
-
-        /* HEADER 2 NƠ CŨ */
+        /* HEADER 2 NƠ */
         .header { padding: 25px 20px; text-align: center; border-bottom: 2px dashed var(--pink-light); position: relative; }
         .header::before, .header::after { content: '🎀'; position: absolute; font-size: 40px; top: 15px; animation: swing 3s infinite ease-in-out; }
         .header::before { left: 15px; } .header::after { right: 15px; }
@@ -54,34 +44,37 @@
         video { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); }
         #countdown { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 80px; color: white; font-weight: 700; z-index: 100; }
 
-        #result-wrapper { position: relative; width: fit-content; margin: 0 auto 10px; border-radius: 15px; border: 2px solid var(--pink-light); background: white; touch-action: none; overflow: hidden;}
+        /* FIX: Wrapper ảnh */
+        #result-wrapper { position: relative; width: fit-content; margin: 0 auto 10px; border-radius: 15px; border: 2px solid var(--pink-light); background: white; touch-action: none; overflow: hidden; z-index: 1; }
         canvas { max-width: 100%; height: auto; display: block; border-radius: 15px; }
         
+        /* FIX: Sticker Layer không chặn các nút bên dưới */
         #sticker-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 5; pointer-events: none; }
         .draggable-item { position: absolute; cursor: move; pointer-events: auto; touch-action: none; z-index: 10; white-space: nowrap; padding: 5px; font-size: 35px; border: 2px dashed transparent; }
         .draggable-item.selected { border-color: var(--pink-main); background: rgba(255,102,153,0.1); border-radius: 8px; }
 
-        .footer { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 450px; padding: 15px 20px; background: white; z-index: 1000; border-top: 1px solid #f0f0f0; box-sizing: border-box; display: flex; flex-direction: column; gap: 8px; }
-        .btn-next { background: linear-gradient(135deg, #ff8fa3, #ff6699); color: white; border: none; padding: 16px; border-radius: 30px; font-size: 16px; font-weight: 700; box-shadow: 0 4px 0 #d64574; }
+        .footer { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 450px; padding: 15px 20px; background: white; z-index: 9999; border-top: 1px solid #f0f0f0; box-sizing: border-box; display: flex; flex-direction: column; gap: 8px; }
+        .btn-next { background: linear-gradient(135deg, #ff8fa3, #ff6699); color: white; border: none; padding: 16px; border-radius: 30px; font-size: 16px; font-weight: 700; box-shadow: 0 4px 0 #d64574; cursor: pointer; }
         
-        .decor-tools { background: #fff; padding: 12px; border-radius: 15px; border: 1px solid #eee; margin-top: 10px; }
-        .scroll-box { display: flex; gap: 10px; overflow-x: auto; padding: 10px 0; border-bottom: 1px solid #f9f9f9; }
-        .color-dot { width: 35px; height: 35px; border-radius: 50%; border: 3px solid #eee; flex-shrink: 0; }
-        .emoji-item { font-size: 30px; cursor: pointer; flex-shrink: 0; }
+        /* FIX: Công cụ decor luôn nằm trên */
+        .decor-tools { background: #fff; padding: 12px; border-radius: 15px; border: 1px solid #eee; margin-top: 10px; position: relative; z-index: 100; }
+        .scroll-box { display: flex; gap: 10px; overflow-x: auto; padding: 10px 0; border-bottom: 1px solid #f9f9f9; -webkit-overflow-scrolling: touch; }
+        .color-dot { width: 35px; height: 35px; border-radius: 50%; border: 3px solid #eee; flex-shrink: 0; cursor: pointer; }
+        .emoji-item { font-size: 30px; cursor: pointer; flex-shrink: 0; padding: 5px; }
 
         .text-input-group { display: flex; flex-direction: column; gap: 8px; background: #fdfdfd; padding: 10px; border-radius: 12px; border: 1px solid #f0f0f0; margin-bottom: 10px; }
-        #custom-text { padding: 12px; border-radius: 10px; border: 1px solid #ddd; outline: none; font-family: 'Quicksand'; font-size: 16px; }
-        .font-selector { display: flex; gap: 5px; overflow-x: auto; padding: 5px 0; }
+        #custom-text { padding: 12px; border-radius: 10px; border: 1px solid #ddd; outline: none; font-family: 'Quicksand'; font-size: 16px; width: 100%; box-sizing: border-box; }
+        .font-selector { display: flex; gap: 5px; overflow-x: auto; padding: 5px 0; -webkit-overflow-scrolling: touch; }
         .font-btn { padding: 6px 12px; border-radius: 8px; border: 1px solid #ddd; background: white; font-size: 11px; white-space: nowrap; cursor: pointer; }
         .font-btn.active { background: var(--pink-main); color: white; border-color: var(--pink-main); }
-        .btn-row { display: flex; gap: 5px; }
-        .style-btn { flex: 1; padding: 8px; border-radius: 8px; border: 1px solid #ddd; background: white; font-weight: bold; }
+        .btn-row { display: flex; gap: 5px; width: 100%; }
+        .style-btn { flex: 1; padding: 8px; border-radius: 8px; border: 1px solid #ddd; background: white; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
 <div class="container">
     <div class="header">
-        <img id="avatar-top" src="avatar.jpg" onerror="this.src='https://via.placeholder.com/90/ff6699/ffffff?text=Cún'">
+        <img id="avatar-top" src="avatar.jpg" onerror="this.src='uploaded:logo.jpg-6bcfdeb9-25a9-4bbd-8225-bbef0445890e'">
         <h1>Tiệm PhotoBooth nhà Cún chào Bạn❤️</h1>
     </div>
 
@@ -96,22 +89,22 @@
 
     <div id="screen-1" class="screen active-screen">
         <h2>Chọn kiểu khung hình</h2>
-        <div class="sub-desc">Mỗi bố cục ảnh sẽ mang đến một cảm xúc kỷ niệm riêng. ✨</div>
+        <div class="sub-desc">Chọn một bố cục ảnh thật xinh nhé! ✨</div>
         <div class="card-grid">
-            <div class="card selected" onclick="setL(this, 1, 'v')"><strong>1 Ảnh</strong><span>Tập trung vào bạn nhất</span></div>
-            <div class="card" onclick="setL(this, 2, 'v')"><strong>2 Ảnh Dọc</strong><span>Gấp đôi sự đáng yêu</span></div>
-            <div class="card" onclick="setL(this, 3, 'v')"><strong>3 Ảnh Dọc</strong><span>Cổ điển & Tinh tế</span></div>
-            <div class="card" onclick="setL(this, 4, 'v')"><strong>4 Ảnh Dọc</strong><span>Dải kỷ niệm dài lâu</span></div>
-            <div class="card" style="grid-column: span 2;" onclick="setL(this, 4, 'g')"><strong>4 Ảnh Lưới (Ngang)</strong><span>Phù hợp chụp cùng nhóm</span></div>
+            <div class="card selected" onclick="setL(this, 1, 'v')"><strong>1 Ảnh</strong><span>Tập trung vào bạn</span></div>
+            <div class="card" onclick="setL(this, 2, 'v')"><strong>2 Ảnh Dọc</strong><span>Gấp đôi đáng yêu</span></div>
+            <div class="card" onclick="setL(this, 3, 'v')"><strong>3 Ảnh Dọc</strong><span>Cổ điển tinh tế</span></div>
+            <div class="card" onclick="setL(this, 4, 'v')"><strong>4 Ảnh Dọc</strong><span>Dải kỷ niệm dài</span></div>
+            <div class="card" style="grid-column: span 2;" onclick="setL(this, 4, 'g')"><strong>4 Ảnh Lưới (Ngang)</strong><span>Chụp cùng nhóm bạn</span></div>
         </div>
-        <div class="footer"><button class="btn-next" onclick="go(2)">Chọn khung ➔</button></div>
+        <div class="footer"><button class="btn-next" onclick="go(2)">Chọn khung này ➔</button></div>
     </div>
 
     <div id="screen-2" class="screen">
         <h2>Chọn Filter màu ảnh</h2>
-        <div class="sub-desc">Tông màu giúp ảnh lung linh và có hồn hơn đó! ✨</div>
+        <div class="sub-desc">Tông màu giúp ảnh lung linh hơn! ✨</div>
         <div class="card-grid" id="filter-list"></div>
-        <div class="footer"><button class="btn-next" onclick="go(3); startCamera();">Sẵn sàng chụp ảnh ➔</button></div>
+        <div class="footer"><button class="btn-next" onclick="go(3); startCamera();">Sẵn sàng chụp ➔</button></div>
     </div>
 
     <div id="screen-3" class="screen">
@@ -121,21 +114,22 @@
         <input type="file" id="fileInput" hidden multiple accept="image/*" onchange="handleFile(this)">
         <div class="footer">
             <button class="btn-next" style="background:#f0f0f0; color:#555; box-shadow: 0 4px 0 #ccc; margin-bottom: 5px; font-size:13px;" onclick="document.getElementById('fileInput').click()">Tải ảnh từ máy 📂</button>
-            <button class="btn-next" id="capBtn" onclick="takeP()">Bấm để chụp ngay 📸</button>
+            <button class="btn-next" id="capBtn" onclick="takeP()">Chụp ngay 📸</button>
         </div>
     </div>
 
     <div id="screen-4" class="screen">
         <h2>Trang trí & Căn chỉnh</h2>
+        <div class="sub-desc">Chạm vào ảnh để kéo, chọn sticker để di chuyển.</div>
         <div id="result-wrapper"><canvas id="canvas"></canvas><div id="sticker-layer"></div></div>
         <div class="decor-tools">
             <div class="btn-row" style="margin-bottom:10px;">
-                <button class="style-btn" style="background:#fff3e0; color:#ef6c00;" onclick="retakeAll()">Chụp lại ảnh 🔄</button>
-                <button class="style-btn" style="background:#ffebee; color:#ff5252;" onclick="clearStickers()">Xóa Sticker 🗑️</button>
+                <button class="style-btn" style="background:#fff3e0; color:#ef6c00;" onclick="retakeAll()">Chụp lại 🔄</button>
+                <button class="style-btn" style="background:#ffebee; color:#ff5252;" onclick="clearStickers()">Xóa Decor 🗑️</button>
             </div>
             <div class="scroll-box" id="cBar"></div>
             <div class="text-input-group" style="margin-top:10px;">
-                <input type="text" id="custom-text" placeholder="Viết gì đó lên ảnh...">
+                <input type="text" id="custom-text" placeholder="Viết gì đó...">
                 <div class="font-selector" id="fontBar">
                     <button class="font-btn active" onclick="setFont('Quicksand', this)">Mặc định</button>
                     <button class="font-btn" style="font-family:'Dancing Script'" onclick="setFont('Dancing Script', this)">Điệu đà</button>
@@ -143,7 +137,7 @@
                     <button class="font-btn" style="font-family:'Playfair Display'" onclick="setFont('Playfair Display', this)">Cổ điển</button>
                 </div>
                 <div class="btn-row">
-                    <div id="text-color-preview" style="width:30px; height:30px; border-radius:50%; background:#333; border:2px solid #eee;"></div>
+                    <div id="text-color-preview" style="width:30px; height:30px; border-radius:50%; background:#333; border:2px solid #eee; flex-shrink:0;"></div>
                     <button class="btn-next" style="padding:5px 15px; font-size:12px; flex:2;" onclick="addTextSticker()">Dán chữ</button>
                 </div>
             </div>
@@ -177,10 +171,7 @@
     filters.forEach((f, i) => {
         const div = document.createElement('div'); div.className = 'card' + (i===0?' selected':'');
         div.innerHTML = `<strong>${f.name}</strong>`;
-        div.onclick = () => { 
-            document.querySelectorAll('#filter-list .card').forEach(c=>c.classList.remove('selected')); 
-            div.classList.add('selected'); filter = f.val; video.style.filter = filter; 
-        };
+        div.onclick = () => { document.querySelectorAll('#filter-list .card').forEach(c=>c.classList.remove('selected')); div.classList.add('selected'); filter = f.val; video.style.filter = filter; };
         document.getElementById('filter-list').appendChild(div);
     });
 
@@ -197,24 +188,17 @@
         span.onclick=()=>addS(s); document.getElementById('sBar').appendChild(span);
     });
 
-    function setFont(f, el) {
-        curFont = f;
-        document.querySelectorAll('.font-btn').forEach(b => b.classList.remove('active'));
-        el.classList.add('active');
-    }
+    function setFont(f, el) { curFont = f; document.querySelectorAll('.font-btn').forEach(b => b.classList.remove('active')); el.classList.add('active'); }
 
     function go(s) { 
         document.querySelectorAll('.screen').forEach(e=>e.classList.remove('active-screen')); 
         document.getElementById('screen-'+s).classList.add('active-screen'); 
         document.querySelectorAll('.step').forEach((st, i) => st.classList.toggle('active', i < s));
         document.getElementById('p-fill').style.width = ((s-1) * 25) + "%";
-        if(s===1) stopCamera();
+        window.scrollTo(0,0);
     }
 
-    async function startCamera() { 
-        try { video.srcObject = await navigator.mediaDevices.getUserMedia({video: {facingMode: "user"}}); } catch(e) { alert("Không thể mở máy ảnh!"); } 
-    }
-    function stopCamera() { if(video.srcObject) video.srcObject.getTracks().forEach(t=>t.stop()); }
+    async function startCamera() { try { video.srcObject = await navigator.mediaDevices.getUserMedia({video: {facingMode: "user"}}); } catch(e) {} }
 
     function takeP() {
         if(photos.length < max) {
@@ -222,19 +206,11 @@
                 document.getElementById('countdown').innerText = i;
                 if(i-- <= 0) {
                     clearInterval(t); document.getElementById('countdown').innerText = "";
-                    const tmp = document.createElement('canvas');
-                    tmp.width = video.videoWidth; tmp.height = video.videoHeight;
-                    const tc = tmp.getContext('2d');
-                    if(filter!=='none') tc.filter = filter;
-                    tc.translate(tmp.width,0); tc.scale(-1,1);
-                    tc.drawImage(video,0,0);
-                    const img = new Image();
-                    img.src = tmp.toDataURL('image/jpeg', 1.0);
-                    img.onload = () => { 
-                        photos.push(img); photoConfigs.push({x:0,y:0,scale:1.1}); 
-                        document.getElementById('pc').innerText=`${photos.length}/${max}`; 
-                        if(photos.length===max){setup(); go(4);} 
-                    };
+                    const tmp = document.createElement('canvas'); tmp.width = video.videoWidth; tmp.height = video.videoHeight;
+                    const tc = tmp.getContext('2d'); if(filter!=='none') tc.filter = filter;
+                    tc.translate(tmp.width,0); tc.scale(-1,1); tc.drawImage(video,0,0);
+                    const img = new Image(); img.src = tmp.toDataURL('image/jpeg', 0.9);
+                    img.onload = () => { photos.push(img); photoConfigs.push({x:0,y:0,scale:1.1}); document.getElementById('pc').innerText=`${photos.length}/${max}`; if(photos.length===max){setup(); go(4);} };
                 }
             }, 800);
         }
@@ -243,13 +219,7 @@
     function handleFile(input) {
         Array.from(input.files).slice(0, max).forEach(file => {
             const reader = new FileReader();
-            reader.onload = (e) => { 
-                const img = new Image(); img.src = e.target.result; 
-                img.onload = () => { 
-                    photos.push(img); photoConfigs.push({x:0, y:0, scale:1.1}); 
-                    if(photos.length>=max){setup(); go(4);}
-                }; 
-            };
+            reader.onload = (e) => { const img = new Image(); img.src = e.target.result; img.onload = () => { photos.push(img); photoConfigs.push({x:0, y:0, scale:1.1}); if(photos.length>=max){setup(); go(4);}}; };
             reader.readAsDataURL(file);
         });
     }
@@ -284,8 +254,7 @@
         let drag = false, sx, sy;
         canvas.onmousedown = canvas.ontouchstart = (e) => { 
             const r = canvas.getBoundingClientRect(); const p = e.touches ? e.touches[0] : e;
-            const my = (p.clientY - r.top); 
-            activeIdx = Math.floor(my / (canvas.height/scaleFactor/photos.length));
+            const my = (p.clientY - r.top); activeIdx = Math.floor(my / (canvas.height/scaleFactor/photos.length));
             if(activeIdx >= photos.length) activeIdx = photos.length - 1;
             drag = true; sx = p.clientX; sy = p.clientY; 
         };
@@ -301,8 +270,7 @@
     function addTextSticker() {
         const v = document.getElementById('custom-text').value; if(!v) return;
         const s = document.createElement('div'); s.className='draggable-item'; s.innerText=v;
-        s.style.color = curTextColor; s.style.fontFamily = curFont;
-        s.style.left='50px'; s.style.top='50px'; s.style.fontSize='25px';
+        s.style.color = curTextColor; s.style.fontFamily = curFont; s.style.left='50px'; s.style.top='50px'; s.style.fontSize='25px';
         makeDrag(s); stickerLayer.appendChild(s); document.getElementById('custom-text').value="";
     }
 
@@ -334,7 +302,7 @@
         document.getElementById('final-p').appendChild(img); go(5);
     }
 
-    function dl() { const a = document.createElement('a'); a.download = 'booth_hd.png'; a.href = document.querySelector('#final-p img').src; a.click(); }
+    function dl() { const a = document.createElement('a'); a.download = 'booth.png'; a.href = document.querySelector('#final-p img').src; a.click(); }
     function setL(el, n, t) { document.querySelectorAll('.card').forEach(c=>c.classList.remove('selected')); el.classList.add('selected'); max = n; layout = t; }
 </script>
 </body>
