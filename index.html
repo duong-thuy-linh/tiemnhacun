@@ -211,25 +211,53 @@
         ctx.restore();
     }
 
-    function draw() {
-        ctx.fillStyle = bg; ctx.fillRect(0,0,canvas.width,canvas.height);
-        let loaded = 0;
-        photos.forEach((src, i) => {
-            const img = new Image(); img.src = src;
-            img.onload = () => {
-                const r = 15, pad = 15;
-                ctx.save();
-                if(layout === 'g') {
-                    const w = 145, h = 193, x = pad + (i%2)*(w+10), y = pad + Math.floor(i/2)*(h+15);
-                    ctx.beginPath(); ctx.roundRect(x,y,w,h,r); ctx.clip(); ctx.drawImage(img,x,y,w,h);
-                } else {
-                    const w = canvas.width - pad*2, h = 240, x = pad, y = pad + i*(h+15);
-                    ctx.beginPath(); ctx.roundRect(x,y,w,h,r); ctx.clip(); ctx.drawImage(img,x,y,w,h);
-                }
-                ctx.restore();
-                if(++loaded === photos.length) drawTiemNhaCunText();
-            };
-        });
+    // Tìm đến hàm draw() trong code của bạn và thay bằng đoạn này:
+
+function draw() {
+    ctx.fillStyle = bg; 
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+    let loaded = 0;
+    
+    photos.forEach((src, i) => {
+        const img = new Image(); 
+        img.src = src;
+        img.onload = () => {
+            const r = 15, pad = 15;
+            ctx.save();
+            
+            let w, h, x, y;
+            if(layout === 'g') {
+                w = 145; h = 193; 
+                x = pad + (i%2)*(w+10); 
+                y = pad + Math.floor(i/2)*(h+15);
+            } else {
+                w = canvas.width - pad*2; h = 240; 
+                x = pad; 
+                y = pad + i*(h+15);
+            }
+
+            // --- ĐOẠN FIX LỖI ÉP MẶT (CHỈNH TỈ LỆ) ---
+            ctx.beginPath(); 
+            ctx.roundRect(x, y, w, h, r); 
+            ctx.clip();
+
+            // Tính toán để ảnh không bị méo (Aspect Ratio Fill)
+            let imgW = img.width;
+            let imgH = img.height;
+            let ratio = Math.max(w / imgW, h / imgH);
+            let newW = imgW * ratio;
+            let newH = imgH * ratio;
+            let offX = (w - newW) / 2;
+            let offY = (h - newH) / 2;
+
+            ctx.drawImage(img, x + offX, y + offY, newW, newH);
+            // ------------------------------------------
+
+            ctx.restore();
+            if(++loaded === photos.length) drawTiemNhaCunText();
+        };
+    });
+}
     }
 
     function makeDraggable(el) {
