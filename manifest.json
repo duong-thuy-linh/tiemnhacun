@@ -1,0 +1,30 @@
+{
+  "name": "Tiệm PhotoBooth Nhà Cún",
+  "short_name": "Nhà Cún",
+  "description": "Chụp ảnh xinh đẹp với khung trang trí dễ thương",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#ffafcc",
+  "theme_color": "#ffafcc",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "logo.jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg",
+      "purpose": "any"
+    },
+    {
+      "src": "logo.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "any"
+    },
+    {
+      "src": "logo.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "maskable"
+    }
+  ]
+}
