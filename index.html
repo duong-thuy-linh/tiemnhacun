@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Tiệm PhotoBooth nhà Cún ❤️</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&family=Pacifico&family=Mali:wght@600&family=Dancing+Script:wght@700&family=Lobster&family=Patrick+Hand&family=Comfortaa:wght@700&family=Caveat:wght@700&family=Satisfy&family=Great+Vibes&family=Playball&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&family=Pacifico&family=Mali:wght@600&family=Dancing+Script:wght@700&family=Lobster&family=Patrick+Hand&family=Comfortaa:wght@700&family=Caveat:wght@700&family=Satisfy&family=Great+Vibes&family=Playball&family=Bungee+Shade&family=Monoton&display=swap" rel="stylesheet">
     
     <style>
         :root { 
@@ -225,6 +225,7 @@
     <section class="step-block" id="block4">
         <p class="status-msg">Trang trí ảnh thôi nào!</p>
         <div id="decor-display-area"></div>
+        <p class="hint-text" style="color: #ffafcc; font-weight: bold;">💡 Mẹo: Dùng 1 ngón để kéo, 2 ngón để zoom ảnh nhé!</p>
         <div class="size-panel">
             <span>Kích cỡ:</span>
             <button class="size-btn" onclick="changeSize(1.1)">+</button>
@@ -240,6 +241,12 @@
             <button class="opt-btn" onclick="curFont='Pacifico',updateF(this)" style="font-family:Pacifico">Cực xinh</button>
             <button class="opt-btn" onclick="curFont='Mali',updateF(this)" style="font-family:Mali">Dễ thương</button>
             <button class="opt-btn" onclick="curFont='Patrick Hand',updateF(this)" style="font-family:'Patrick Hand'">Viết tay</button>
+            <button class="opt-btn" onclick="curFont='Dancing Script',updateF(this)" style="font-family:'Dancing Script'">Nghệ thuật</button>
+            <button class="opt-btn" onclick="curFont='Lobster',updateF(this)" style="font-family:'Lobster'">Cổ điển</button>
+            <button class="opt-btn" onclick="curFont='Comfortaa',updateF(this)" style="font-family:'Comfortaa'">Tròn trịa</button>
+            <button class="opt-btn" onclick="curFont='Caveat',updateF(this)" style="font-family:'Caveat'">Phá cách</button>
+            <button class="opt-btn" onclick="curFont='Satisfy',updateF(this)" style="font-family:'Satisfy'">Mềm mại</button>
+            <button class="opt-btn" onclick="curFont='Great Vibes',updateF(this)" style="font-family:'Great Vibes'">Quý phái</button>
         </div>
         <span class="slider-title">🎨 Màu chữ</span>
         <div class="slider" id="text-color-list"></div>
@@ -266,7 +273,9 @@
 </div>
 
 <script>
-    let photos = [], maxPhotos = 4, layoutDir = 'v', bg = '#ffffff', curFont = 'Quicksand', curColor = '#ffafcc', currentFilter = 'none', track = null, selectedEl = null;
+    let photos = [], photoStyles = [], maxPhotos = 4, layoutDir = 'v', bg = '#ffffff', curFont = 'Quicksand', curColor = '#ffafcc', currentFilter = 'none', track = null, selectedEl = null;
+    let isDraggingPhoto = false, activePhotoIdx = -1, lastTouchX = 0, lastTouchY = 0, lastDist = 0;
+
     const canvas = document.getElementById('canvas'), ctx = canvas.getContext('2d'), video = document.getElementById('video'), sLayer = document.getElementById('sticker-layer'), resArea = document.getElementById('result-area');
 
     // Khởi tạo camera
@@ -287,6 +296,7 @@
             resArea.style.display = "block";
             const target = step == 4 ? 'decor-display-area' : 'final-display-area';
             document.getElementById(target).appendChild(resArea);
+            if(step == 4) initPhotoControl(); else removePhotoControl();
         } else {
             resArea.style.display = "none";
         }
@@ -295,7 +305,7 @@
     function handleUpload(input) {
         if (!input.files || input.files.length === 0) return;
         const files = Array.from(input.files).slice(0, maxPhotos);
-        photos = []; 
+        photos = []; photoStyles = [];
         let loadedCount = 0;
         files.forEach(file => {
             const reader = new FileReader();
@@ -304,6 +314,7 @@
                 img.src = e.target.result;
                 img.onload = () => {
                     photos.push(img);
+                    photoStyles.push({ x: 0, y: 0, scale: 1 });
                     loadedCount++;
                     if (loadedCount === files.length) { draw(); goToStep(4); }
                 };
@@ -334,7 +345,7 @@
     }
 
     async function startAutoCapture() {
-        photos = []; draw();
+        photos = []; photoStyles = []; draw();
         for (let i = 0; i < maxPhotos; i++) {
             capturePhoto();
             await new Promise(r => setTimeout(r, 4500));
@@ -350,10 +361,14 @@
         tCtx.translate(tmp.width, 0); tCtx.scale(-1, 1);
         tCtx.drawImage(video, 0, 0);
         const img = new Image(); img.src = tmp.toDataURL();
-        img.onload = () => { photos.push(img); draw(); if(photos.length >= maxPhotos) goToStep(4); };
+        img.onload = () => { 
+            photos.push(img); 
+            photoStyles.push({ x: 0, y: 0, scale: 1 });
+            draw(); 
+            if(photos.length >= maxPhotos) goToStep(4); 
+        };
     }
 
-    // --- HÀM DRAW: SỬA LỖI CẮT ẢNH TRÊN ĐIỆN THOẠI ---
     function draw() {
         const s = 2; // Tăng độ nét
         canvas.width = (layoutDir === 'v') ? 300 * s : (220 * maxPhotos + 40) * s;
@@ -363,47 +378,157 @@
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         
         photos.forEach((img, i) => {
-            // Tính toán kích thước ô chứa ảnh
+            const style = photoStyles[i] || { x: 0, y: 0, scale: 1 };
             let tw = layoutDir==='v' ? (canvas.width - 40*s) : (200*s);
             let th = layoutDir==='v' ? (100*s) : (canvas.height - 80*s);
             let x = layoutDir==='v' ? (20*s) : (20*s + i*(tw+10*s));
             let y = layoutDir==='v' ? (20*s + i*(th+10*s)) : (25*s);
             
+            const radius = 6 * s;
             ctx.save();
-            ctx.beginPath(); 
-            ctx.roundRect(x, y, tw, th, 4*s); 
+            ctx.beginPath();
+            ctx.moveTo(x + radius, y);
+            ctx.lineTo(x + tw - radius, y);
+            ctx.quadraticCurveTo(x + tw, y, x + tw, y + radius);
+            ctx.lineTo(x + tw, y + th - radius);
+            ctx.quadraticCurveTo(x + tw, y + th, x + tw - radius, y + th);
+            ctx.lineTo(x + radius, y + th);
+            ctx.quadraticCurveTo(x, y + th, x, y + th - radius);
+            ctx.lineTo(x, y + radius);
+            ctx.quadraticCurveTo(x, y, x + radius, y);
+            ctx.closePath();
             ctx.clip();
-            
-            /* --- LOGIC COVER CHỐNG MÉO --- */
-            // Lấy tỷ lệ của ảnh gốc và tỷ lệ của ô chứa
+
             let imgRatio = img.width / img.height;
             let targetRatio = tw / th;
-            let sw, sh, sx, sy;
+            let dw, dh;
 
             if (imgRatio > targetRatio) {
-                // Ảnh gốc rộng hơn ô chứa (Thường là chụp ngang) -> Cắt bớt chiều ngang
-                sh = img.height;
-                sw = img.height * targetRatio;
-                sx = (img.width - sw) / 2;
-                sy = 0;
+                dh = th; dw = th * imgRatio;
             } else {
-                // Ảnh gốc cao hơn ô chứa (Thường là chụp dọc điện thoại) -> Cắt bớt chiều cao
-                sw = img.width;
-                sh = img.width / targetRatio;
-                sx = 0;
-                sy = (img.height - sh) / 2;
+                dw = tw; dh = tw / imgRatio;
             }
 
-            // Vẽ phần ảnh đã được tính toán cắt giữa
-            ctx.drawImage(img, sx, sy, sw, sh, x, y, tw, th);
+            dw *= style.scale;
+            dh *= style.scale;
+
+            let dx = x + (tw - dw) / 2 + (style.x * s);
+            let dy = y + (th - dh) / 2 + (style.y * s);
+
+            ctx.drawImage(img, 0, 0, img.width, img.height, dx, dy, dw, dh);
             ctx.restore();
         });
 
-        // Chữ ký tiệm
-        ctx.fillStyle = (bg==='#ffffff' || bg==='#fff5f7') ? '#ffafcc' : '#ffffff';
+        ctx.fillStyle = (bg==='#ffffff' || bg==='#fff5f7' || bg==='#ffcad4') ? '#ffafcc' : '#ffffff';
         ctx.font = `bold ${13*s}px Quicksand`; 
         ctx.textAlign = 'center';
         ctx.fillText("Tiệm PhotoBooth nhà Cún ❤️", canvas.width/2, canvas.height - 12*s);
+    }
+
+    // --- LOGIC ĐIỀU KHIỂN CĂN CHỈNH ẢNH (MỚI: ZOOM CHUỘT & PINCH) ---
+    function initPhotoControl() {
+        // Hỗ trợ chuột (PC) - Zoom bằng con lăn
+        canvas.onwheel = (e) => {
+            if (activePhotoIdx !== -1) {
+                e.preventDefault();
+                const factor = e.deltaY > 0 ? 0.95 : 1.05;
+                photoStyles[activePhotoIdx].scale *= factor;
+                draw();
+            }
+        };
+
+        canvas.ontouchstart = (e) => {
+            if (selectedEl) return; 
+            const rect = canvas.getBoundingClientRect();
+            const s = 2;
+            const touch = e.touches[0];
+            const mouseX = (touch.clientX - rect.left) * (canvas.width / rect.width);
+            const mouseY = (touch.clientY - rect.top) * (canvas.height / rect.height);
+
+            activePhotoIdx = photos.findIndex((_, i) => {
+                let tw = layoutDir==='v' ? (canvas.width - 40*s) : (200*s);
+                let th = layoutDir==='v' ? (100*s) : (canvas.height - 80*s);
+                let x = layoutDir==='v' ? (20*s) : (20*s + i*(tw+10*s));
+                let y = layoutDir==='v' ? (20*s + i*(th+10*s)) : (25*s);
+                return mouseX >= x && mouseX <= x + tw && mouseY >= y && mouseY <= y + th;
+            });
+
+            if (activePhotoIdx !== -1) {
+                isDraggingPhoto = true;
+                lastTouchX = touch.clientX;
+                lastTouchY = touch.clientY;
+                if (e.touches.length === 2) {
+                    lastDist = Math.hypot(e.touches[0].pageX - e.touches[1].pageX, e.touches[0].pageY - e.touches[1].pageY);
+                }
+            }
+        };
+
+        // Hỗ trợ cả Click chuột trái để kéo trên PC
+        canvas.onmousedown = (e) => {
+            if (selectedEl) return;
+            const rect = canvas.getBoundingClientRect();
+            const s = 2;
+            const mouseX = (e.clientX - rect.left) * (canvas.width / rect.width);
+            const mouseY = (e.clientY - rect.top) * (canvas.height / rect.height);
+
+            activePhotoIdx = photos.findIndex((_, i) => {
+                let tw = layoutDir==='v' ? (canvas.width - 40*s) : (200*s);
+                let th = layoutDir==='v' ? (100*s) : (canvas.height - 80*s);
+                let x = layoutDir==='v' ? (20*s) : (20*s + i*(tw+10*s));
+                let y = layoutDir==='v' ? (20*s + i*(th+10*s)) : (25*s);
+                return mouseX >= x && mouseX <= x + tw && mouseY >= y && mouseY <= y + th;
+            });
+
+            if (activePhotoIdx !== -1) {
+                isDraggingPhoto = true;
+                lastTouchX = e.clientX;
+                lastTouchY = e.clientY;
+            }
+        };
+
+        window.onmousemove = (e) => {
+            if (!isDraggingPhoto || activePhotoIdx === -1) return;
+            const dx = (e.clientX - lastTouchX);
+            const dy = (e.clientY - lastTouchY);
+            photoStyles[activePhotoIdx].x += dx;
+            photoStyles[activePhotoIdx].y += dy;
+            lastTouchX = e.clientX;
+            lastTouchY = e.clientY;
+            draw();
+        };
+
+        window.onmouseup = () => { isDraggingPhoto = false; };
+
+        canvas.ontouchmove = (e) => {
+            if (!isDraggingPhoto || activePhotoIdx === -1) return;
+            e.preventDefault();
+            
+            if (e.touches.length === 1) {
+                const touch = e.touches[0];
+                const dx = (touch.clientX - lastTouchX);
+                const dy = (touch.clientY - lastTouchY);
+                photoStyles[activePhotoIdx].x += dx;
+                photoStyles[activePhotoIdx].y += dy;
+                lastTouchX = touch.clientX;
+                lastTouchY = touch.clientY;
+            } else if (e.touches.length === 2) {
+                const dist = Math.hypot(e.touches[0].pageX - e.touches[1].pageX, e.touches[0].pageY - e.touches[1].pageY);
+                if (lastDist > 0) {
+                    const delta = dist / lastDist;
+                    photoStyles[activePhotoIdx].scale *= delta;
+                }
+                lastDist = dist;
+            }
+            draw();
+        };
+
+        canvas.ontouchend = () => { isDraggingPhoto = false; lastDist = 0; };
+    }
+
+    function removePhotoControl() { 
+        canvas.ontouchstart = canvas.ontouchmove = canvas.ontouchend = null; 
+        canvas.onmousedown = canvas.onwheel = null;
+        window.onmousemove = window.onmouseup = null;
     }
 
     function changeSize(factor) {
@@ -444,7 +569,7 @@
     }
 
     function clearStickers() { if(confirm("Dọn sạch trang trí?")) { sLayer.innerHTML = ""; selectedEl = null; } }
-    function resetTiem() { if(confirm("Chụp lại từ đầu nhé?")) { photos = []; sLayer.innerHTML = ""; goToStep(1); } }
+    function resetTiem() { if(confirm("Chụp lại từ đầu nhé?")) { photos = []; photoStyles = []; sLayer.innerHTML = ""; goToStep(1); } }
     function setLayout(n,d,btn) {
         maxPhotos = n; layoutDir = d;
         document.querySelectorAll('#block1 .opt-btn').forEach(b => b.classList.remove('active'));
@@ -477,8 +602,7 @@
         draw();
     }
 
-    // Khởi tạo màu sắc và sticker
-    const colorPalette = ['#ffffff','#fff5f7','#ffcad4','#ffafcc','#fde2ff','#e6e6fa','#e0ffff','#d1f2eb','#333333','#ff5e5e','#ff9a5e'];
+    const colorPalette = ['#ffffff','#fff5f7','#ffcad4','#ffafcc','#fde2ff','#e6e6fa','#e0ffff','#d1f2eb','#333333','#ff5e5e','#ff9a5e','#caffbf','#9bf6ff','#bdb2ff'];
     colorPalette.forEach(c => {
         const dot = document.createElement('div'); dot.className = 'color-dot'; dot.style.background = c;
         dot.onclick = () => { bg = c; draw(); }; document.getElementById('bg-list').appendChild(dot);
@@ -486,7 +610,7 @@
         tdot.onclick = () => curColor = c; document.getElementById('text-color-list').appendChild(tdot);
     });
 
-    const stickerPack = ['❤️','✨','🎀','🌸','🧸','🐾','🍓','🌈','🍭','📷','🐶','🐱','🌟','💖','🎉','🐰','🦄','🍩'];
+    const stickerPack = ['❤️','✨','🎀','🌸','🧸','🐾','🍓','🌈','🍭','📷','🐶','🐱','🌟','💖','🎉','🐰','🦄','🍩','🍪','🍒','🎈'];
     stickerPack.forEach(s => {
         const span = document.createElement('span'); span.className = 'sticker-item'; span.innerText = s;
         span.onclick = () => addSticker(s); document.getElementById('sticker-list').appendChild(span);
