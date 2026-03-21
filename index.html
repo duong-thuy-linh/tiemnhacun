@@ -157,7 +157,6 @@
 
         .helper-box strong { color: var(--pink-primary); }
 
-        /* ✅ CSS CHO HƯỚNG DẪN CÀI ĐẶT */
         .install-guide {
             background: linear-gradient(135deg, rgba(255, 175, 204, 0.2), rgba(255, 202, 212, 0.2));
             border: 2px solid var(--pink-primary);
@@ -194,17 +193,6 @@
             color: var(--pink-primary);
             display: block;
             margin-bottom: 4px;
-        }
-
-        .step-code {
-            background: #f5f5f5;
-            padding: 8px;
-            border-radius: 4px;
-            font-family: monospace;
-            font-size: 11px;
-            color: #333;
-            margin-top: 4px;
-            word-break: break-all;
         }
 
         .tabs {
@@ -362,7 +350,6 @@
         <div class="step-item" id="s5"><div class="step-num">5</div><div class="step-label">Lưu</div></div>
     </div>
 
-    <!-- ✅ STEP 1: CHỌN KHUNG -->
     <section class="step-block active" id="block1">
         <p class="status-msg">Chọn kiểu khung thật xinh nhé!</p>
         
@@ -412,7 +399,6 @@
         <button class="btn btn-primary" onclick="goToStep(2)">TIẾP THEO: CHỌN MÀU NỀN ➡️</button>
     </section>
 
-    <!-- ✅ STEP 2: CHỌN MÀU -->
     <section class="step-block" id="block2">
         <p class="status-msg">Màu nền nào hợp với bạn nhất?</p>
         
@@ -438,7 +424,6 @@
         <button class="btn btn-secondary" onclick="goToStep(1)">⬅️ QUAY LẠI CHỌN KHUNG</button>
     </section>
 
-    <!-- ✅ STEP 3: CHỤP ẢNH -->
     <section class="step-block" id="block3">
         <p class="status-msg">Chuẩn bị pose dáng thật xinh nha!</p>
         
@@ -513,7 +498,6 @@
         <button class="btn btn-secondary" onclick="goToStep(2)">⬅️ QUAY LẠI CHỌN MÀU</button>
     </section>
 
-    <!-- ✅ STEP 4: TRANG TRÍ -->
     <section class="step-block" id="block4">
         <p class="status-msg">Trang trí ảnh thôi nào!</p>
         
@@ -561,7 +545,7 @@
                 <button class="helper-close" onclick="closeHelper(event)">✕</button>
             </div>
             <div class="helper-content">
-                <strong>Gõ lời nhắn rồi chọn font chữ xinh.</strong> Mỗi font có phong cách riêng - hãy thử tất cả xem thích cái nào! Bạn có tới 10 kiểu ch�� để lựa chọn. 🎀
+                <strong>Gõ lời nhắn rồi chọn font chữ xinh.</strong> Mỗi font có phong cách riêng - hãy thử tất cả xem thích cái nào! Bạn có tới 10 kiểu chữ để lựa chọn. 🎀
             </div>
         </div>
 
@@ -586,7 +570,6 @@
         <button class="btn btn-secondary" onclick="clearStickers()">Dọn sạch trang trí</button>
     </section>
 
-    <!-- ✅ STEP 5: LƯU -->
     <section class="step-block" id="block5">
         <p class="status-msg">Xinh quá đi! ❤️</p>
         
@@ -610,7 +593,6 @@
             <button class="btn btn-secondary" onclick="resetTiem()">🔄 Chụp lại từ đầu</button>
         </div>
 
-        <!-- ✅ HƯỚNG DẪN CÀI ĐẶT WEB -->
         <div class="install-guide">
             <h3>📱 Cách tải web vào màn hình chính</h3>
             
@@ -701,7 +683,6 @@
 <div class="download-status" id="download-status">⏳ Đang lưu ảnh vào Album...</div>
 
 <script>
-    // ✅ HÀM TOGGLE CHỮ THÍCH
     function toggleHelper(header) {
         const box = header.closest('.helper-box');
         box.classList.toggle('collapsed');
@@ -709,28 +690,21 @@
 
     function closeHelper(event) {
         event.stopPropagation();
-        const box = event.closest('.helper-box');
-        box.classList.add('collapsed');
+        const box = event.target.closest('.helper-box');
+        if (box) box.classList.add('collapsed');
     }
 
-    // ✅ HÀM SWITCH TAB CÀI ĐẶT
     function switchTab(event, tabName) {
-        // Ẩn tất cả tab content
         document.querySelectorAll('.tab-content').forEach(tab => {
             tab.classList.remove('active');
         });
-        
-        // Xóa active từ tất cả nút
         document.querySelectorAll('.tab-btn').forEach(btn => {
             btn.classList.remove('active');
         });
-        
-        // Hiện tab được chọn
         document.getElementById(tabName).classList.add('active');
         event.target.classList.add('active');
     }
 
-    // ✅ PWA INSTALLATION
     let deferredPrompt;
     const installBtn = document.getElementById('installBtn');
 
@@ -753,7 +727,6 @@
         navigator.serviceWorker.register('sw.js').catch(err => console.log('SW registration failed:', err));
     }
 
-    // ✅ BIẾN GLOBAL
     let photos = [], photoStyles = [], maxPhotos = 4, layoutDir = 'v', bg = '#ffffff', curFont = 'Pacifico', curColor = '#ffffff', currentFilter = 'none', track = null, selectedEl = null;
     let isDraggingPhoto = false, activePhotoIdx = -1, lastTouchX = 0, lastTouchY = 0, lastDist = 0;
     let designFrameImg = null;
@@ -1092,7 +1065,7 @@
 
             if (activePhotoIdx !== -1) {
                 isDraggingPhoto = true;
-                lastTouchX = e.clientX;
+                                lastTouchX = e.clientX;
                 lastTouchY = e.clientY;
             }
         };
@@ -1176,6 +1149,7 @@
         d.style.fontWeight = 'bold';
         makeDrag(d); 
         sLayer.appendChild(d);
+        document.getElementById('text-input').value = '';
     }
 
     function makeDrag(el) {
@@ -1232,7 +1206,7 @@
         btn.classList.add('active');
     }
 
-    // ✅ HÀM DOWNLOAD - LƯU VÀO ALBUM
+    // ✅ HÀM DOWNLOAD - SỬA LỖI VỊ TRÍ STICKER & CHỮ
     async function download() {
         const statusEl = document.getElementById('download-status');
         statusEl.style.display = 'block';
@@ -1242,26 +1216,35 @@
             draw();
             await new Promise(r => setTimeout(r, 100));
             
-            const rect = sLayer.getBoundingClientRect();
+            const canvasRect = canvas.getBoundingClientRect();
+            const sLayerRect = sLayer.getBoundingClientRect();
             const items = sLayer.querySelectorAll('.draggable');
             
             items.forEach(item => {
                 const style = window.getComputedStyle(item);
-                const leftPct = parseFloat(item.style.left) / rect.width;
-                const topPct = parseFloat(item.style.top) / rect.height;
+                const itemRect = item.getBoundingClientRect();
+                
+                // Tính vị trí tương đối so với sLayer
+                const relativeX = itemRect.left - sLayerRect.left;
+                const relativeY = itemRect.top - sLayerRect.top;
+                
+                // Tính tỷ lệ scale từ sLayer sang canvas
+                const scaleX = canvas.width / sLayerRect.width;
+                const scaleY = canvas.height / sLayerRect.height;
+                
+                // Chuyển đổi sang tọa độ canvas
+                const canvasX = relativeX * scaleX;
+                const canvasY = relativeY * scaleY;
                 
                 const fontSize = parseFloat(style.fontSize);
                 const font = `${style.fontWeight} ${fontSize}px ${style.fontFamily}`;
                 const color = style.color;
                 const text = item.innerText;
                 
-                const lx = leftPct * canvas.width;
-                const ly = topPct * canvas.height + (fontSize * 0.85);
-                
-                ctx.font = font; 
-                ctx.fillStyle = color; 
+                ctx.font = font;
+                ctx.fillStyle = color;
                 ctx.textAlign = "left";
-                ctx.fillText(text, lx, ly);
+                ctx.fillText(text, canvasX, canvasY + fontSize);
             });
 
             canvas.toBlob(async function(blob) {
@@ -1370,6 +1353,11 @@
     });
 
     setLayout(4, 'v', document.querySelector('#block1 .opt-btn.active'));
+        // ✅ KHỞI TẠO NÚT +/- PHÓNG TO/THU NHỎ
+    document.querySelectorAll('.size-btn').forEach(btn => {
+        btn.style.cursor = 'pointer';
+        btn.style.fontSize = '20px';
+    });
 
 </script>
 </body>
