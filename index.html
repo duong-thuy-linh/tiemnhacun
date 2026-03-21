@@ -8,11 +8,22 @@
     <style>
         :root { --pink-main: #ff6699; --pink-light: #fff0f3; --blue-btn: #3c72e2; --bg-site: #fdf8f9; --shadow: 0 4px 10px rgba(0,0,0,0.1); }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { margin: 0; font-family: 'Quicksand', sans-serif; background: var(--bg-site); display: flex; justify-content: center; min-height: 100vh; overflow-x: hidden; width: 100%; }
+        
+        /* Chống phóng to tự động trên iOS/Android */
+        html, body { 
+            margin: 0; 
+            font-family: 'Quicksand', sans-serif; 
+            background: var(--bg-site); 
+            display: flex; 
+            justify-content: center; 
+            min-height: 100vh; 
+            overflow-x: hidden; 
+            width: 100%;
+            touch-action: manipulation;
+        }
         
         @keyframes subtle-bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
 
-        /* SỬA LỖI TRÀN: Thay đổi từ grid cố định sang grid linh hoạt */
         .main-container { 
             display: grid; 
             grid-template-columns: 320px 1fr 350px; 
@@ -29,7 +40,7 @@
             box-shadow: var(--shadow); 
             height: fit-content; 
             transition: 0.3s; 
-            width: 100%; /* Đảm bảo cột không rộng hơn màn hình */
+            width: 100%;
         }
         
         .col-preview:hover, .col-main:hover, .col-design:hover { transform: translateY(-2px); }
@@ -37,14 +48,24 @@
         .avatar-box { display: flex; align-items: center; gap: 12px; margin-bottom: 15px; background: var(--pink-light); padding: 10px; border-radius: 50px; animation: subtle-bounce 3s infinite ease-in-out; }
         .avatar-img { width: 50px; height: 50px; border-radius: 50%; border: 2px solid var(--pink-main); object-fit: cover; background: #eee; }
         
-        /* Chống tràn cho khung preview ảnh */
         #result-wrapper { background: white; padding: 10px; border: 1px solid #eee; position: relative; width: 100%; max-width: 230px; margin: 0 auto; box-shadow: 0 8px 20px rgba(0,0,0,0.1); border-radius: 5px; }
         canvas { width: 100%; display: block; }
         #sticker-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 10; overflow: hidden; }
         
-        .video-box { width: 100%; background: #000; border-radius: 15px; overflow: hidden; position: relative; aspect-ratio: 4/3; margin-bottom: 15px; border: 4px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        .video-box { 
+            width: 100%; 
+            background: #000; 
+            border-radius: 15px; 
+            overflow: hidden; 
+            position: relative; 
+            aspect-ratio: 4/3; 
+            margin-bottom: 15px; 
+            border: 4px solid white; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2); 
+            max-height: 60vh; /* Chống tràn dọc trên mobile */
+        }
         #video { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); transition: filter 0.3s; }
-        #countdown { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 100px; color: white; font-weight: bold; text-shadow: 0 0 20px rgba(0,0,0,0.8); pointer-events: none; z-index: 20; font-family: 'Pacifico'; }
+        #countdown { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 80px; color: white; font-weight: bold; text-shadow: 0 0 20px rgba(0,0,0,0.8); pointer-events: none; z-index: 20; font-family: 'Pacifico'; }
         
         #flash-overlay { position: absolute; inset: 0; background: white; opacity: 0; pointer-events: none; z-index: 30; }
         .flash-active { animation: flash-anim 0.4s ease-out; }
@@ -60,32 +81,36 @@
         .btn-flash { background: #f1c40f; box-shadow: 0 4px 0 #f39c12; color: #333; }
         .btn-flash.active { background: #2ecc71; box-shadow: 0 4px 0 #27ae60; color: white; }
 
-        .slider-container { display: flex; gap: 12px; overflow-x: auto; padding: 10px 5px; scrollbar-width: thin; scrollbar-color: var(--pink-main) transparent; border-radius: 10px; background: #fafafa; margin-bottom: 10px; width: 100%; }
-        .slider-container::-webkit-scrollbar { height: 4px; }
-        .slider-container::-webkit-scrollbar-thumb { background: var(--pink-main); border-radius: 10px; }
+        .slider-container { display: flex; gap: 10px; overflow-x: auto; padding: 10px 5px; scrollbar-width: none; border-radius: 10px; background: #fafafa; margin-bottom: 10px; width: 100%; }
+        .slider-container::-webkit-scrollbar { display: none; }
 
-        .dot { width: 35px; height: 35px; border-radius: 50%; border: 3px solid white; cursor: pointer; flex-shrink: 0; box-shadow: 0 2px 5px rgba(0,0,0,0.1); transition: 0.2s; }
-        .dot:hover { transform: scale(1.15) rotate(5deg); }
-        .dot.selected { border-color: var(--pink-main); transform: scale(1.1); box-shadow: 0 0 10px var(--pink-main); }
+        .dot { width: 32px; height: 32px; border-radius: 50%; border: 3px solid white; cursor: pointer; flex-shrink: 0; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .filter-btn { padding: 8px 12px; border-radius: 20px; border: 2px solid #eee; background: #fff; cursor: pointer; font-size: 10px; white-space: nowrap; font-weight: 600; }
+        .filter-btn.active { background: var(--pink-main); color: white; border-color: var(--pink-main); }
 
-        .filter-btn { padding: 8px 15px; border-radius: 20px; border: 2px solid #eee; background: #fff; cursor: pointer; font-size: 11px; white-space: nowrap; font-weight: 600; transition: 0.2s; }
-        .filter-btn.active { background: var(--pink-main); color: white; border-color: var(--pink-main); transform: translateY(2px); box-shadow: inset 0 2px 4px rgba(0,0,0,0.1); }
-
-        .sticker-item { font-size: 32px; cursor: pointer; transition: 0.2s; display: inline-block; padding: 5px; }
-        .sticker-item:hover { transform: scale(1.3) rotate(10deg); }
-
-        .draggable { position: absolute; pointer-events: auto; cursor: move; user-select: none; touch-action: none; white-space: nowrap; font-weight: bold; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2)); }
+        .sticker-item { font-size: 28px; cursor: pointer; display: inline-block; padding: 5px; }
+        .draggable { position: absolute; pointer-events: auto; cursor: move; user-select: none; touch-action: none; white-space: nowrap; font-weight: bold; }
         
-        /* MEDIA QUERY: Xử lý xếp chồng cột khi màn hình nhỏ (Mobile) */
+        /* TỐI ƯU HIỂN THỊ TRÊN ĐIỆN THOẠI */
         @media (max-width: 1050px) { 
             .main-container { 
-                grid-template-columns: 1fr; /* Chuyển thành 1 cột duy nhất */
+                grid-template-columns: 1fr; 
                 padding: 10px;
-                gap: 15px;
+                gap: 12px;
             } 
-            .col-preview { order: 3; } /* Chuyển kết quả xuống dưới cùng trên mobile */
-            .col-main { order: 1; }    /* Chụp ảnh ở đầu */
-            .col-design { order: 2; }  /* Trang trí ở giữa */
+            .col-preview, .col-main, .col-design { 
+                padding: 15px; 
+                border-radius: 15px;
+            }
+            .col-preview { order: 3; } 
+            .col-main { order: 1; }    
+            .col-design { order: 2; }
+            
+            /* Thu nhỏ tiêu đề và chữ trên mobile */
+            div[style*="font-size: 28px"] { font-size: 22px !important; }
+            #countdown { font-size: 60px; }
+            .sticker-item { font-size: 24px; }
+            input[type="text"] { font-size: 16px; } /* Tránh iOS tự động zoom khi focus vào input */
         }
     </style>
 </head>
@@ -101,9 +126,8 @@
             <canvas id="canvas"></canvas>
             <div id="sticker-layer"></div>
         </div>
-        <span class="helper-text" style="text-align: center; margin-top: 10px;">✨ Hình ảnh xem trước sẽ hiển thị ở đây. Các sticker và chữ bạn dán cũng sẽ xuất hiện tại đây luôn đó!</span>
+        <span class="helper-text" style="text-align: center; margin-top: 10px;">✨ Hình ảnh xem trước sẽ hiển thị ở đây.</span>
         <button class="btn-cap" style="margin-top:10px; background:var(--blue-btn); box-shadow:0 4px 0 #2a52a3;" onclick="downloadHighRes()">📥 TẢI ẢNH NÉT CAO</button>
-        <span class="helper-text" style="text-align: center;">(Nhấn tải về để lưu giữ khoảnh khắc xinh đẹp này nhé!)</span>
     </aside>
 
     <main class="col-main">
@@ -111,7 +135,6 @@
         <p style="text-align: center; font-size: 12px; color: #888; margin-top: 0;">Tiệm chụp ảnh tự động siêu cute</p>
         
         <div class="section-title">CHỌN MÀU ẢNH (FILTER)</div>
-        <span class="helper-text">Lướt sang trái/phải để chọn màu ảnh yêu thích: Trắng đen, Cổ điển, Mịn da...</span>
         <div class="slider-container" id="filter-list">
             <button class="filter-btn active" onclick="setFilter('none', this)">Gốc</button>
             <button class="filter-btn" onclick="setFilter('grayscale(100%)', this)">Trắng đen</button>
@@ -126,69 +149,48 @@
             <div id="flash-overlay"></div>
             <div id="countdown"></div>
         </div>
-        <span class="helper-text" style="text-align: center;">📸 Hãy căn chỉnh gương mặt vào giữa khung hình để có bức ảnh đẹp nhất!</span>
         
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;">
-            <div>
-                <button class="btn-cap" onclick="capturePhoto()">📸 CHỤP ĐƠN</button>
-                <span class="helper-text" style="text-align: center;">Chụp từng tấm hình một</span>
-            </div>
-            <div>
-                <button class="btn-cap btn-flash" id="flash-btn" onclick="toggleFlash()">⚡ FLASH: TẮT</button>
-                <span class="helper-text" style="text-align: center;">Bật đèn nháy khi chụp ảnh</span>
-            </div>
+            <button class="btn-cap" onclick="capturePhoto()">📸 CHỤP ĐƠN</button>
+            <button class="btn-cap btn-flash" id="flash-btn" onclick="toggleFlash()">⚡ FLASH: TẮT</button>
         </div>
         
-        <div style="margin-top: 10px;">
-            <button class="btn-cap btn-auto" style="background:#6c5ce7; box-shadow:0 4px 0 #4834d4;" onclick="startAutoCapture()">🤖 CHỤP TỰ ĐỘNG (4 ẢNH)</button>
-            <span class="helper-text" style="text-align: center;">Hệ thống tự động chụp 4 tấm liên tiếp, mỗi tấm cách nhau 3 giây.</span>
-        </div>
+        <button class="btn-cap btn-auto" style="background:#6c5ce7; box-shadow:0 4px 0 #4834d4; margin-top:5px;" onclick="startAutoCapture()">🤖 CHỤP TỰ ĐỘNG (4 ẢNH)</button>
 
         <div class="section-title">CHỌN KIỂU KHUNG (LAYOUT)</div>
-        <span class="helper-text">Mẹo nhỏ: Bạn nên chọn Layout trước khi chụp để ảnh không bị lệch nhé!</span>
         <div class="slider-container">
             <button class="btn-cap layout-btn" onclick="setLayout(1,'v', this)">1 Ảnh</button>
             <button class="btn-cap layout-btn" onclick="setLayout(2,'v', this)">2 Dọc</button>
             <button class="btn-cap layout-btn selected" onclick="setLayout(4,'v', this)">4 Dọc</button>
             <button class="btn-cap layout-btn" onclick="setLayout(4,'h', this)">4 Ngang</button>
         </div>
-        <p style="text-align:center; font-size: 12px; color: #888;">Tiến độ chụp: <span id="count-txt" style="color:var(--pink-main); font-weight:bold;">0</span> / <span id="total-txt" style="font-weight:bold;">4</span></p>
+        <p style="text-align:center; font-size: 12px; color: #888;">Tiến độ: <span id="count-txt" style="color:var(--pink-main); font-weight:bold;">0</span> / <span id="total-txt" style="font-weight:bold;">4</span></p>
     </main>
 
     <div class="col-design">
         <div class="section-title">1. MÀU NỀN KHUNG</div>
-        <span class="helper-text">Chọn màu nền cho khung ảnh (trắng, pastel, hoặc đen huyền bí).</span>
         <div class="slider-container" id="bg-list"></div>
 
         <div class="section-title">2. DÁN STICKER CUTE</div>
-        <span class="helper-text">Chạm để dán. Kéo thả để di chuyển. Click để xóa.</span>
         <div class="slider-container" id="sticker-list"></div>
 
         <div class="section-title">3. VIẾT CHỮ TRANG TRÍ</div>
-        <span class="helper-text">Nhập nội dung vào ô này:</span>
         <input type="text" id="text-input" placeholder="Ví dụ: Happy Day ❤️" style="width:100%; padding:10px; border-radius:10px; border:2px solid #eee; margin-bottom:10px; font-family:'Quicksand'; outline:none;">
         
-        <span class="helper-text">Chọn kiểu chữ (Font đẹp):</span>
         <div class="slider-container" style="background: #fff0f3;">
-            <button class="filter-btn active" onclick="curFont='Quicksand'; updateFontBtn(this)" style="font-family:'Quicksand'">Hiện đại</button>
-            <button class="filter-btn" onclick="curFont='Pacifico'; updateFontBtn(this)" style="font-family:'Pacifico'">Lãng mạn</button>
-            <button class="filter-btn" onclick="curFont='Mali'; updateFontBtn(this)" style="font-family:'Mali'">Đáng yêu</button>
-            <button class="filter-btn" onclick="curFont='Itim'; updateFontBtn(this)" style="font-family:'Itim'">Vui tươi</button>
-            <button class="filter-btn" onclick="curFont='Dancing Script'; updateFontBtn(this)" style="font-family:'Dancing Script'">Mềm mại</button>
-            <button class="filter-btn" onclick="curFont='Patrick Hand'; updateFontBtn(this)" style="font-family:'Patrick Hand'">Viết tay</button>
+            <button class="filter-btn active" onclick="curFont='Quicksand'; updateFontBtn(this)">Hiện đại</button>
+            <button class="filter-btn" onclick="curFont='Pacifico'; updateFontBtn(this)">Lãng mạn</button>
+            <button class="filter-btn" onclick="curFont='Mali'; updateFontBtn(this)">Đáng yêu</button>
         </div>
 
-        <span class="helper-text">Chọn màu chữ:</span>
         <div class="slider-container" id="text-color-list"></div>
 
-        <div class="section-title">4. KÍCH THƯỚC STICKER/CHỮ</div>
-        <span class="helper-text">Kéo thanh này để chỉnh to/nhỏ trước khi dán.</span>
+        <div class="section-title">4. KÍCH THƯỚC</div>
         <input type="range" id="size-slider" min="15" max="80" value="35" style="width: 100%; accent-color: var(--pink-main);">
         
         <button class="btn-cap" style="margin-top:15px;" onclick="addText()">✏️ DÁN CHỮ NGAY</button>
         
-        <hr style="border:0; border-top:1px dashed #ddd; margin: 15px 0;">
-        <button class="btn-cap" style="background:#e74c3c; box-shadow:0 4px 0 #c0392b;" onclick="if(confirm('Xóa hết Sticker nha?')) document.getElementById('sticker-layer').innerHTML=''">🗑️ XÓA TẤT CẢ</button>
+        <button class="btn-cap" style="background:#e74c3c; box-shadow:0 4px 0 #c0392b; margin-top:10px;" onclick="if(confirm('Xóa hết Sticker nha?')) document.getElementById('sticker-layer').innerHTML=''">🗑️ XÓA TẤT CẢ</button>
         <button class="btn-cap" style="background:#888; box-shadow:0 4px 0 #555;" onclick="clearPhotos()">🔄 CHỤP LẠI TỪ ĐẦU</button>
     </div>
 </div>
@@ -361,5 +363,7 @@
 
     setLayout(4, 'v', document.querySelectorAll('.layout-btn')[2]);
 </script>
+</body>
+</html>
 </body>
 </html>
