@@ -8,17 +8,37 @@
     <style>
         :root { --pink-main: #ff6699; --pink-light: #fff0f3; --blue-btn: #3c72e2; --bg-site: #fdf8f9; --shadow: 0 4px 10px rgba(0,0,0,0.1); }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { margin: 0; font-family: 'Quicksand', sans-serif; background: var(--bg-site); display: flex; justify-content: center; min-height: 100vh; overflow-x: hidden; }
+        body { margin: 0; font-family: 'Quicksand', sans-serif; background: var(--bg-site); display: flex; justify-content: center; min-height: 100vh; overflow-x: hidden; width: 100%; }
         
         @keyframes subtle-bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
 
-        .main-container { display: grid; grid-template-columns: 320px 1fr 350px; gap: 20px; padding: 20px; max-width: 1500px; width: 100%; }
-        .col-preview, .col-main, .col-design { background: white; border-radius: 20px; padding: 20px; box-shadow: var(--shadow); height: fit-content; transition: 0.3s; }
+        /* SỬA LỖI TRÀN: Thay đổi từ grid cố định sang grid linh hoạt */
+        .main-container { 
+            display: grid; 
+            grid-template-columns: 320px 1fr 350px; 
+            gap: 20px; 
+            padding: 20px; 
+            max-width: 1500px; 
+            width: 100%; 
+        }
+
+        .col-preview, .col-main, .col-design { 
+            background: white; 
+            border-radius: 20px; 
+            padding: 20px; 
+            box-shadow: var(--shadow); 
+            height: fit-content; 
+            transition: 0.3s; 
+            width: 100%; /* Đảm bảo cột không rộng hơn màn hình */
+        }
+        
         .col-preview:hover, .col-main:hover, .col-design:hover { transform: translateY(-2px); }
         
         .avatar-box { display: flex; align-items: center; gap: 12px; margin-bottom: 15px; background: var(--pink-light); padding: 10px; border-radius: 50px; animation: subtle-bounce 3s infinite ease-in-out; }
         .avatar-img { width: 50px; height: 50px; border-radius: 50%; border: 2px solid var(--pink-main); object-fit: cover; background: #eee; }
-        #result-wrapper { background: white; padding: 10px; border: 1px solid #eee; position: relative; width: 230px; margin: 0 auto; box-shadow: 0 8px 20px rgba(0,0,0,0.1); border-radius: 5px; }
+        
+        /* Chống tràn cho khung preview ảnh */
+        #result-wrapper { background: white; padding: 10px; border: 1px solid #eee; position: relative; width: 100%; max-width: 230px; margin: 0 auto; box-shadow: 0 8px 20px rgba(0,0,0,0.1); border-radius: 5px; }
         canvas { width: 100%; display: block; }
         #sticker-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 10; overflow: hidden; }
         
@@ -40,7 +60,7 @@
         .btn-flash { background: #f1c40f; box-shadow: 0 4px 0 #f39c12; color: #333; }
         .btn-flash.active { background: #2ecc71; box-shadow: 0 4px 0 #27ae60; color: white; }
 
-        .slider-container { display: flex; gap: 12px; overflow-x: auto; padding: 10px 5px; scrollbar-width: thin; scrollbar-color: var(--pink-main) transparent; border-radius: 10px; background: #fafafa; margin-bottom: 10px; }
+        .slider-container { display: flex; gap: 12px; overflow-x: auto; padding: 10px 5px; scrollbar-width: thin; scrollbar-color: var(--pink-main) transparent; border-radius: 10px; background: #fafafa; margin-bottom: 10px; width: 100%; }
         .slider-container::-webkit-scrollbar { height: 4px; }
         .slider-container::-webkit-scrollbar-thumb { background: var(--pink-main); border-radius: 10px; }
 
@@ -56,7 +76,17 @@
 
         .draggable { position: absolute; pointer-events: auto; cursor: move; user-select: none; touch-action: none; white-space: nowrap; font-weight: bold; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2)); }
         
-        @media (max-width: 1050px) { .main-container { grid-template-columns: 1fr; } .col-preview { order: 2; } }
+        /* MEDIA QUERY: Xử lý xếp chồng cột khi màn hình nhỏ (Mobile) */
+        @media (max-width: 1050px) { 
+            .main-container { 
+                grid-template-columns: 1fr; /* Chuyển thành 1 cột duy nhất */
+                padding: 10px;
+                gap: 15px;
+            } 
+            .col-preview { order: 3; } /* Chuyển kết quả xuống dưới cùng trên mobile */
+            .col-main { order: 1; }    /* Chụp ảnh ở đầu */
+            .col-design { order: 2; }  /* Trang trí ở giữa */
+        }
     </style>
 </head>
 <body>
@@ -244,7 +274,6 @@
             let y = layoutDir==='v' ? (20*s + i*(h+10*s)) : (25*s);
             ctx.save(); roundedRect(ctx, x, y, w, h, 8*s); ctx.clip();
             
-            // Thuật toán Object-Fit Cover để chống ép ảnh/cắt ảnh méo mó
             let imgR = img.width/img.height, targetR = w/h;
             let drawW, drawH, drawX, drawY;
             if(imgR > targetR) { drawH = h; drawW = h * imgR; drawX = x + (w - drawW)/2; drawY = y; }
@@ -299,7 +328,6 @@
             };
             document.onmouseup = document.ontouchend = () => {
                 document.onmousemove = document.ontouchmove = null;
-                // Nếu click (không phải kéo) thì hỏi xóa, áp dụng cho cả Sticker và Chữ
                 if (!isDragging) { if (confirm("Xóa nội dung này nhé?")) el.remove(); }
             };
         };
