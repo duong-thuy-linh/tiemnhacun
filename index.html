@@ -4,12 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Tiệm PhotoBooth nhà Cún ❤️ - Chụp Ảnh Online Cực Xinh</title>
-    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&family=Pacifico&family=Mali:wght@600&family=Itim&family=Dancing+Script:wght@700&family=Patrick+Hand&display=swap" rel="stylesheet">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&family=Pacifico&family=Mali:wght@600&family=Itim&family=Dancing+Script:wght@700&family=Patrick+Hand&family=Lobster&family=Comfortaa:wght@700&family=Caveat:wght@700&family=Bungee+Shade&family=Sriracha&family=Be+Vietnam+Pro:wght@400;700&display=swap" rel="stylesheet">
+    
     <style>
-        :root { --pink-main: #ff6699; --pink-light: #fff0f3; --blue-btn: #3c72e2; --bg-site: #fdf8f9; --shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        /* 🎨 Định nghĩa bảng màu chủ đạo (Pastel) cho toàn bộ trang web */
+        :root { 
+            --pink-main: #ff6699; /* Màu hồng đậm cho nút bấm và tiêu đề */
+            --pink-light: #fff0f3; /* Màu hồng nhạt cho nền khối */
+            --blue-btn: #3c72e2; /* Màu xanh dương cho nút tải ảnh */
+            --bg-site: #fdf8f9; /* Màu nền trắng kem của trang web */
+            --shadow: 0 4px 15px rgba(0,0,0,0.1); /* Hiệu ứng bóng đổ nhẹ */
+        }
+
+        /* ✨ Reset CSS cơ bản để giao diện nhất quán trên mọi trình duyệt */
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        
-        /* Chống phóng to tự động trên iOS/Android */
         html, body { 
             margin: 0; 
             font-family: 'Quicksand', sans-serif; 
@@ -21,96 +30,127 @@
             width: 100%;
             touch-action: manipulation;
         }
-        
-        @keyframes subtle-bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
 
+        /* 📦 Bố cục lưới (Grid) chia làm 3 cột trên máy tính */
         .main-container { 
             display: grid; 
             grid-template-columns: 320px 1fr 350px; 
             gap: 20px; 
             padding: 20px; 
-            max-width: 1500px; 
+            max-width: 1600px; 
             width: 100%; 
         }
 
+        /* 🎀 Style chung cho 3 cột chính: bo góc và đổ bóng */
         .col-preview, .col-main, .col-design { 
             background: white; 
-            border-radius: 20px; 
+            border-radius: 25px; 
             padding: 20px; 
             box-shadow: var(--shadow); 
             height: fit-content; 
-            transition: 0.3s; 
             width: 100%;
+            transition: all 0.3s ease;
+            border: 1px solid #ffeef2;
         }
         
-        .col-preview:hover, .col-main:hover, .col-design:hover { transform: translateY(-2px); }
+        /* 🎈 Hiệu ứng lơ lửng khi di chuột vào các khối */
+        .col-preview:hover, .col-main:hover, .col-design:hover { 
+            transform: translateY(-8px); 
+            box-shadow: 0 10px 25px rgba(255,102,153,0.15); 
+        }
         
-        .avatar-box { display: flex; align-items: center; gap: 12px; margin-bottom: 15px; background: var(--pink-light); padding: 10px; border-radius: 50px; animation: subtle-bounce 3s infinite ease-in-out; }
-        .avatar-img { width: 50px; height: 50px; border-radius: 50%; border: 2px solid var(--pink-main); object-fit: cover; background: #eee; }
+        /* 🎞️ Khung bao quanh Canvas (giấy in ảnh) */
+        #result-wrapper { 
+            background: white; 
+            padding: 10px; 
+            border: 1px solid #eee; 
+            position: relative; 
+            width: 100%; 
+            max-width: 230px; 
+            margin: 0 auto; 
+            box-shadow: 0 8px 30px rgba(0,0,0,0.1); 
+            border-radius: 5px; 
+        }
+        canvas { width: 100%; display: block; border-radius: 2px; }
         
-        #result-wrapper { background: white; padding: 10px; border: 1px solid #eee; position: relative; width: 100%; max-width: 230px; margin: 0 auto; box-shadow: 0 8px 20px rgba(0,0,0,0.1); border-radius: 5px; }
-        canvas { width: 100%; display: block; }
+        /* 📍 Lớp trong suốt nằm trên cùng để chứa Sticker và Chữ */
         #sticker-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 10; overflow: hidden; }
         
+        /* 🎥 Khung hiển thị Camera */
         .video-box { 
             width: 100%; 
             background: #000; 
-            border-radius: 15px; 
+            border-radius: 20px; 
             overflow: hidden; 
             position: relative; 
             aspect-ratio: 4/3; 
             margin-bottom: 15px; 
-            border: 4px solid white; 
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2); 
-            max-height: 60vh; /* Chống tràn dọc trên mobile */
+            border: 5px solid white; 
+            max-height: 45vh; 
+            display: flex; align-items: center; justify-content: center;
         }
-        #video { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); transition: filter 0.3s; }
-        #countdown { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 80px; color: white; font-weight: bold; text-shadow: 0 0 20px rgba(0,0,0,0.8); pointer-events: none; z-index: 20; font-family: 'Pacifico'; }
-        
-        #flash-overlay { position: absolute; inset: 0; background: white; opacity: 0; pointer-events: none; z-index: 30; }
-        .flash-active { animation: flash-anim 0.4s ease-out; }
+        #video { width: 100%; height: 100%; object-fit: contain; transform: scaleX(-1); }
+
+        /* ⚡ Hiệu ứng chớp trắng (Flash) khi nhấn chụp */
+        #flash-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: white; opacity: 0; pointer-events: none; z-index: 99;
+        }
+        .flash-active { animation: flash-anim 0.3s ease-out; }
         @keyframes flash-anim { 0% { opacity: 1; } 100% { opacity: 0; } }
 
-        .section-title { font-weight: 700; font-size: 11px; margin: 15px 0 3px; color: #777; text-transform: uppercase; border-left: 3px solid var(--pink-main); padding-left: 8px; }
-        .helper-text { font-size: 10px; color: #999; margin-bottom: 8px; display: block; font-style: italic; line-height: 1.4; }
+        /* 🔘 Nút bấm thiết kế kiểu 3D lồi */
+        .btn-cap { 
+            background: var(--pink-main); 
+            color: #fff; 
+            padding: 14px; 
+            border: none; 
+            border-radius: 30px; 
+            font-weight: bold; 
+            cursor: pointer; 
+            width: 100%; 
+            box-shadow: 0 5px 0 #d64574; 
+            margin-bottom: 12px; 
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            font-size: 14px; 
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        /* Hiệu ứng nhấn nút lún xuống */
+        .btn-cap:active { transform: scale(0.92) translateY(4px); box-shadow: 0 1px 0 #d64574; }
 
-        .btn-cap { background: var(--pink-main); color: #fff; padding: 12px; border: none; border-radius: 25px; font-weight: bold; cursor: pointer; width: 100%; box-shadow: 0 4px 0 #d64574; margin-bottom: 10px; transition: all 0.2s; font-size: 14px; position: relative; }
-        .btn-cap:hover { transform: translateY(-2px); box-shadow: 0 6px 0 #d64574; }
-        .btn-cap:active, .btn-cap.selected { transform: translateY(3px); box-shadow: 0 1px 0 #d64574; background: #ff4d88; }
+        /* 🎞️ Khu vực cuộn ngang (Slider) cho Filter và Stickers */
+        .slider-container { 
+            display: flex; gap: 12px; overflow-x: auto; 
+            padding: 15px 5px; border-radius: 15px; 
+            background: #fffafa; margin-bottom: 18px; width: 100%; 
+        }
+        /* Tùy chỉnh thanh cuộn cho đẹp hơn */
+        .slider-container::-webkit-scrollbar { height: 6px; }
+        .slider-container::-webkit-scrollbar-track { background: var(--pink-light); border-radius: 10px; }
+        .slider-container::-webkit-scrollbar-thumb { background: var(--pink-main); border-radius: 10px; }
+
+        /* 🌈 Các chấm chọn màu sắc */
+        .dot { width: 38px; height: 38px; border-radius: 50%; border: 3px solid white; cursor: pointer; flex-shrink: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.1); transition: 0.2s; }
         
-        .btn-flash { background: #f1c40f; box-shadow: 0 4px 0 #f39c12; color: #333; }
-        .btn-flash.active { background: #2ecc71; box-shadow: 0 4px 0 #27ae60; color: white; }
+        /* 🏷️ Nút chọn bộ lọc màu (Filter) */
+        .filter-btn { padding: 10px 18px; border-radius: 25px; border: 2px solid #eee; background: #fff; cursor: pointer; font-size: 12px; white-space: nowrap; font-weight: 700; color: #666; transition: 0.2s; }
+        .filter-btn.active { background: var(--pink-main); color: white; border-color: var(--pink-main); box-shadow: 0 4px 10px rgba(255,102,153,0.3); }
 
-        .slider-container { display: flex; gap: 10px; overflow-x: auto; padding: 10px 5px; scrollbar-width: none; border-radius: 10px; background: #fafafa; margin-bottom: 10px; width: 100%; }
-        .slider-container::-webkit-scrollbar { display: none; }
+        /* 🐰 Các icon Sticker có thể nhấn */
+        .sticker-item { font-size: 35px; cursor: pointer; display: inline-block; padding: 5px; flex-shrink: 0; transition: 0.2s; filter: drop-shadow(2px 2px 2px rgba(0,0,0,0.1)); }
+        .sticker-item:active { transform: scale(1.6); }
 
-        .dot { width: 32px; height: 32px; border-radius: 50%; border: 3px solid white; cursor: pointer; flex-shrink: 0; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .filter-btn { padding: 8px 12px; border-radius: 20px; border: 2px solid #eee; background: #fff; cursor: pointer; font-size: 10px; white-space: nowrap; font-weight: 600; }
-        .filter-btn.active { background: var(--pink-main); color: white; border-color: var(--pink-main); }
-
-        .sticker-item { font-size: 28px; cursor: pointer; display: inline-block; padding: 5px; }
+        /* 🛸 Lớp dành cho các phần tử có thể kéo thả */
         .draggable { position: absolute; pointer-events: auto; cursor: move; user-select: none; touch-action: none; white-space: nowrap; font-weight: bold; }
         
-        /* TỐI ƯU HIỂN THỊ TRÊN ĐIỆN THOẠI */
+        /* 💬 Chữ hướng dẫn nhỏ */
+        .helper-text { font-size: 11px; color: #ff85a2; display: block; margin-bottom: 6px; font-weight: 600; text-align: center; }
+
+        /* 📱 Tối ưu hóa cho thiết bị di động (màn hình nhỏ hơn 1050px) */
         @media (max-width: 1050px) { 
-            .main-container { 
-                grid-template-columns: 1fr; 
-                padding: 10px;
-                gap: 12px;
-            } 
-            .col-preview, .col-main, .col-design { 
-                padding: 15px; 
-                border-radius: 15px;
-            }
-            .col-preview { order: 3; } 
-            .col-main { order: 1; }    
-            .col-design { order: 2; }
-            
-            /* Thu nhỏ tiêu đề và chữ trên mobile */
-            div[style*="font-size: 28px"] { font-size: 22px !important; }
-            #countdown { font-size: 60px; }
-            .sticker-item { font-size: 24px; }
-            input[type="text"] { font-size: 16px; } /* Tránh iOS tự động zoom khi focus vào input */
+            .main-container { grid-template-columns: 1fr; padding: 10px; gap: 15px; } 
+            .col-preview { order: 3; } .col-main { order: 1; } .col-design { order: 2; }
+            .video-box { max-height: 40vh; }
         }
     </style>
 </head>
@@ -118,252 +158,316 @@
 
 <div class="main-container">
     <aside class="col-preview">
-        <div class="avatar-box">
-            <img src="avatar.jpg" class="avatar-img" onerror="this.src='https://via.placeholder.com/50/ff6699/fff?text=Cún'">
-            <div style="font-size: 13px; font-weight: 600;">Tiệm Photo nhà Cún ❤️</div>
+        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px; background: var(--pink-light); padding: 10px; border-radius: 15px;">
+            <img src="logo.jpg" style="width: 45px; height: 45px; border-radius: 50%; border: 2px solid white; box-shadow: var(--shadow);" onerror="this.src='https://via.placeholder.com/45/ff6699/fff?text=Cún'">
+            <div>
+                <div style="font-weight: 700; color: var(--pink-main); font-size: 14px;">Tiệm nhà Cún ❤️</div>
+                <div style="font-size: 9px; color: #888;">Ghé chơi và chụp ảnh nhé!</div>
+            </div>
         </div>
+        
+        <span class="helper-text">✨ Ảnh của bạn sẽ hiện ở đây nha!</span>
         <div id="result-wrapper">
             <canvas id="canvas"></canvas>
             <div id="sticker-layer"></div>
         </div>
-        <span class="helper-text" style="text-align: center; margin-top: 10px;">✨ Hình ảnh xem trước sẽ hiển thị ở đây.</span>
-        <button class="btn-cap" style="margin-top:10px; background:var(--blue-btn); box-shadow:0 4px 0 #2a52a3;" onclick="downloadHighRes()">📥 TẢI ẢNH NÉT CAO</button>
+        
+        <button class="btn-cap" style="margin-top:25px; background:var(--blue-btn); box-shadow:0 5px 0 #2a52a3;" onclick="downloadHighRes()">📥 TẢI ẢNH VỀ MÁY</button>
+        <span class="helper-text" style="color: #aaa;">(Ảnh sẽ được tải xuống chất lượng cao)</span>
     </aside>
 
     <main class="col-main">
-        <div style="font-family: 'Pacifico', cursive; color: var(--pink-main); font-size: 28px; text-align: center; margin-bottom: 5px;">Tiệm nhà Cún ❤️</div>
-        <p style="text-align: center; font-size: 12px; color: #888; margin-top: 0;">Tiệm chụp ảnh tự động siêu cute</p>
+        <h1 style="font-family:'Pacifico'; color:var(--pink-main); text-align:center; margin:0; font-size: 32px; text-shadow: 2px 2px 0 white;">Tiệm nhà Cún ❤️</h1>
         
-        <div class="section-title">CHỌN MÀU ẢNH (FILTER)</div>
+        <p style="font-size:11px; color:#aaa; text-transform:uppercase; font-weight:700; margin-top:20px;">1. Chọn màu ảnh (Filter)</p>
         <div class="slider-container" id="filter-list">
             <button class="filter-btn active" onclick="setFilter('none', this)">Gốc</button>
-            <button class="filter-btn" onclick="setFilter('grayscale(100%)', this)">Trắng đen</button>
-            <button class="filter-btn" onclick="setFilter('sepia(80%)', this)">Cổ điển</button>
-            <button class="filter-btn" onclick="setFilter('brightness(1.2) contrast(1.1)', this)">Tươi sáng</button>
-            <button class="filter-btn" onclick="setFilter('saturate(1.8) contrast(1.1) blur(0.2px)', this)">Mịn da</button>
-            <button class="filter-btn" onclick="setFilter('hue-rotate(330deg) saturate(1.2)', this)">Hồng hồng</button>
+            <button class="filter-btn" onclick="setFilter('brightness(1.1) saturate(1.2)', this)">Trắng Sáng</button>
+            <button class="filter-btn" onclick="setFilter('grayscale(100%)', this)">Trắng Đen</button>
+            <button class="filter-btn" onclick="setFilter('sepia(60%)', this)">Vintage</button>
+            <button class="filter-btn" onclick="setFilter('saturate(1.8) contrast(1.1)', this)">Rực Rỡ</button>
+            <button class="filter-btn" onclick="setFilter('hue-rotate(330deg)', this)">Hồng Nhạt</button>
         </div>
 
         <div class="video-box">
             <video id="video" autoplay playsinline></video>
-            <div id="flash-overlay"></div>
-            <div id="countdown"></div>
+            <div id="flash-overlay"></div> <div id="countdown" style="position:absolute; font-size:90px; color:white; font-family:'Pacifico'; text-shadow:3px 3px 15px rgba(0,0,0,0.4);"></div>
         </div>
         
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;">
-            <button class="btn-cap" onclick="capturePhoto()">📸 CHỤP ĐƠN</button>
-            <button class="btn-cap btn-flash" id="flash-btn" onclick="toggleFlash()">⚡ FLASH: TẮT</button>
-        </div>
-        
-        <button class="btn-cap btn-auto" style="background:#6c5ce7; box-shadow:0 4px 0 #4834d4; margin-top:5px;" onclick="startAutoCapture()">🤖 CHỤP TỰ ĐỘNG (4 ẢNH)</button>
+        <button id="torch-btn" class="btn-cap" style="background:#f1c40f; box-shadow:0 5px 0 #f39c12; color: #333;" onclick="toggleTorch()">🔦 BẬT ĐÈN TRỢ SÁNG</button>
 
-        <div class="section-title">CHỌN KIỂU KHUNG (LAYOUT)</div>
-        <div class="slider-container">
-            <button class="btn-cap layout-btn" onclick="setLayout(1,'v', this)">1 Ảnh</button>
-            <button class="btn-cap layout-btn" onclick="setLayout(2,'v', this)">2 Dọc</button>
-            <button class="btn-cap layout-btn selected" onclick="setLayout(4,'v', this)">4 Dọc</button>
-            <button class="btn-cap layout-btn" onclick="setLayout(4,'h', this)">4 Ngang</button>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+            <button class="btn-cap" onclick="capturePhoto()">📸 CHỤP ĐƠN</button>
+            <button class="btn-cap" style="background:#6c5ce7; box-shadow:0 5px 0 #4834d4;" onclick="startAutoCapture()">🤖 CHỤP LIÊN TỤC (4)</button>
         </div>
-        <p style="text-align:center; font-size: 12px; color: #888;">Tiến độ: <span id="count-txt" style="color:var(--pink-main); font-weight:bold;">0</span> / <span id="total-txt" style="font-weight:bold;">4</span></p>
+
+        <div style="margin-top: 15px; border: 2px dashed #ffcad4; padding: 15px; border-radius: 20px; background: #fff;">
+            <span class="helper-text">Hoặc nếu bạn ngại chụp thì chọn ảnh có sẵn:</span>
+            <input type="file" id="upload-input" accept="image/*" multiple style="display: none;" onchange="handleUpload(event)">
+            <button class="btn-cap" style="background:#2ecc71; box-shadow:0 5px 0 #27ae60; width: 85%; margin: 0 auto;" onclick="document.getElementById('upload-input').click()">📤 TẢI ẢNH TỪ MÁY</button>
+        </div>
+
+        <p style="font-size:11px; color:#aaa; text-transform:uppercase; font-weight:700; margin-top:25px;">2. Chọn Kiểu Khung Hình</p>
+        <div class="slider-container">
+            <button class="filter-btn layout-btn" onclick="setLayout(1,'v', this)">1 Ảnh</button>
+            <button class="filter-btn layout-btn" onclick="setLayout(2,'v', this)">2 Dọc</button>
+            <button class="filter-btn layout-btn active" onclick="setLayout(4,'v', this)">4 Dọc</button>
+            <button class="filter-btn layout-btn" onclick="setLayout(4,'h', this)">4 Ngang</button>
+        </div>
     </main>
 
     <div class="col-design">
-        <div class="section-title">1. MÀU NỀN KHUNG</div>
+        <p style="font-size:11px; color:#aaa; text-transform:uppercase; font-weight:700; margin:0;">3. Màu Nền Giấy</p>
         <div class="slider-container" id="bg-list"></div>
 
-        <div class="section-title">2. DÁN STICKER CUTE</div>
+        <p style="font-size:11px; color:#aaa; text-transform:uppercase; font-weight:700; margin:0;">4. Kho Stickers Cute</p>
+        <span class="helper-text" style="text-align: left;">👉 Bấm để dán, kéo để di chuyển sticker:</span>
         <div class="slider-container" id="sticker-list"></div>
 
-        <div class="section-title">3. VIẾT CHỮ TRANG TRÍ</div>
-        <input type="text" id="text-input" placeholder="Ví dụ: Happy Day ❤️" style="width:100%; padding:10px; border-radius:10px; border:2px solid #eee; margin-bottom:10px; font-family:'Quicksand'; outline:none;">
+        <p style="font-size:11px; color:#aaa; text-transform:uppercase; font-weight:700; margin:0;">5. Viết Lời Nhắn</p>
+        <input type="text" id="text-input" placeholder="Viết gì đó thật cute..." style="width:100%; padding:14px; border-radius:15px; border:2px solid #ffcad4; margin-bottom:12px; outline:none; font-family:'Quicksand'; font-weight: 600;">
         
-        <div class="slider-container" style="background: #fff0f3;">
+        <div class="slider-container" id="font-list">
             <button class="filter-btn active" onclick="curFont='Quicksand'; updateFontBtn(this)">Hiện đại</button>
-            <button class="filter-btn" onclick="curFont='Pacifico'; updateFontBtn(this)">Lãng mạn</button>
-            <button class="filter-btn" onclick="curFont='Mali'; updateFontBtn(this)">Đáng yêu</button>
+            <button class="filter-btn" onclick="curFont='Pacifico'; updateFontBtn(this)" style="font-family:'Pacifico'">Cực Xinh</button>
+            <button class="filter-btn" onclick="curFont='Mali'; updateFontBtn(this)" style="font-family:'Mali'">Dễ thương</button>
+            <button class="filter-btn" onclick="curFont='Dancing Script'; updateFontBtn(this)" style="font-family:'Dancing Script'">Bay bổng</button>
         </div>
 
         <div class="slider-container" id="text-color-list"></div>
 
-        <div class="section-title">4. KÍCH THƯỚC</div>
-        <input type="range" id="size-slider" min="15" max="80" value="35" style="width: 100%; accent-color: var(--pink-main);">
+        <button class="btn-cap" onclick="addText()">✏️ DÁN CHỮ LÊN ẢNH</button>
         
-        <button class="btn-cap" style="margin-top:15px;" onclick="addText()">✏️ DÁN CHỮ NGAY</button>
-        
-        <button class="btn-cap" style="background:#e74c3c; box-shadow:0 4px 0 #c0392b; margin-top:10px;" onclick="if(confirm('Xóa hết Sticker nha?')) document.getElementById('sticker-layer').innerHTML=''">🗑️ XÓA TẤT CẢ</button>
-        <button class="btn-cap" style="background:#888; box-shadow:0 4px 0 #555;" onclick="clearPhotos()">🔄 CHỤP LẠI TỪ ĐẦU</button>
+        <button class="btn-cap" style="background:#e74c3c; box-shadow:0 5px 0 #c0392b; margin-top: 15px;" onclick="clearAllDecorations()">🗑️ XÓA HẾT STICKER</button>
+        <button class="btn-cap" style="background:#888; box-shadow:0 5px 0 #555;" onclick="clearPhotos()">🔄 LÀM MỚI ẢNH</button>
     </div>
 </div>
 
 <script>
-    let maxPhotos = 4, layoutDir = 'v', photos = [], bg = '#ffffff', curFont = 'Quicksand', curColor = '#ff6699', currentFilter = 'none', isFlashOn = false;
+    /* -------------------------------------------------------------------------- */
+    /* XỬ LÝ LOGIC CHÍNH                              */
+    /* -------------------------------------------------------------------------- */
+
+    let maxPhotos = 4, layoutDir = 'v', photos = [], bg = '#ffffff', curFont = 'Quicksand', curColor = '#ff6699', currentFilter = 'none';
+    let track = null; // Biến lưu trữ luồng camera để điều khiển đèn pin
     const canvas = document.getElementById('canvas'), ctx = canvas.getContext('2d'), video = document.getElementById('video'), sLayer = document.getElementById('sticker-layer');
-    const shutterSound = new Audio("https://www.soundjay.com/mechanical/camera-shutter-click-01.mp3");
 
-    navigator.mediaDevices.getUserMedia({ video: true }).then(s => video.srcObject = s).catch(() => alert("Hãy bật Camera!"));
+    /* 📸 Kích hoạt Camera khi mở trang */
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } })
+        .then(s => {
+            video.srcObject = s;
+            track = s.getVideoTracks()[0]; // Lấy track video để dùng cho đèn pin
+        })
+        .catch(() => alert("Bạn nhớ bật Camera để tiệm chụp ảnh cho bạn nhé! ❤️"));
 
-    function toggleFlash() {
-        isFlashOn = !isFlashOn;
-        document.getElementById('flash-btn').innerText = isFlashOn ? "⚡ FLASH: BẬT" : "⚡ FLASH: TẮT";
-        document.getElementById('flash-btn').classList.toggle('active', isFlashOn);
+    /* 🔦 Hàm bật/tắt đèn pin (Flashlight) trợ sáng */
+    async function toggleTorch() {
+        if (!track) return;
+        const capabilities = track.getCapabilities();
+        // Kiểm tra xem thiết bị có hỗ trợ đèn pin không
+        if (!capabilities.torch) {
+            alert("Rất tiếc, thiết bị của bạn không hỗ trợ đèn pin trên camera này!");
+            return;
+        }
+        
+        const btn = document.getElementById('torch-btn');
+        try {
+            // Đảo ngược trạng thái đèn pin hiện tại
+            const currentTorch = track.getSettings().torch;
+            await track.applyConstraints({
+                advanced: [{ torch: !currentTorch }]
+            });
+            btn.innerText = !currentTorch ? "🔦 TẮT ĐÈN TRỢ SÁNG" : "🔦 BẬT ĐÈN TRỢ SÁNG";
+        } catch (err) {
+            console.error(err);
+        }
     }
 
-    function setFilter(filterStr, btn) {
-        currentFilter = filterStr; video.style.filter = filterStr;
+    /* ⚡ Hiệu ứng màn hình nháy trắng khi chụp */
+    function triggerFlash() {
+        const flash = document.getElementById('flash-overlay');
+        flash.classList.remove('flash-active');
+        void flash.offsetWidth; 
+        flash.classList.add('flash-active');
+    }
+
+    /* 📤 Xử lý tải ảnh từ thiết bị lên hệ thống */
+    function handleUpload(event) {
+        const files = event.target.files;
+        for (let file of files) {
+            if (photos.length >= maxPhotos) break;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.src = e.target.result;
+                img.onload = () => { photos.push(img); draw(); };
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    /* 🎨 Thay đổi bộ lọc màu hiển thị cho Camera */
+    function setFilter(f, btn) {
+        currentFilter = f; video.style.filter = f;
         document.querySelectorAll('#filter-list .filter-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
     }
 
-    function updateFontBtn(btn) {
-        btn.parentElement.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-    }
-
+    /* 📸 Chụp ảnh có đếm ngược 3 giây */
     async function capturePhoto() {
         if (photos.length >= maxPhotos) return;
-        await countdown(3);
-        if(isFlashOn) {
-            const flash = document.getElementById('flash-overlay');
-            flash.classList.add('flash-active');
-            setTimeout(() => flash.classList.remove('flash-active'), 400);
-        }
-        saveFrame();
+        let t = 3;
+        const countEl = document.getElementById('countdown');
+        const timer = setInterval(() => {
+            countEl.innerText = t;
+            if (t <= 0) {
+                clearInterval(timer);
+                countEl.innerText = "";
+                triggerFlash(); 
+                saveFrame(); // Lưu ảnh từ video vào danh sách
+            }
+            t--;
+        }, 800);
     }
 
+    /* 🤖 Tự động chụp liên tiếp cho đến khi đủ khung hình */
     async function startAutoCapture() {
         clearPhotos();
-        for (let i = 0; i < maxPhotos; i++) { await capturePhoto(); }
+        for (let i = 0; i < maxPhotos; i++) {
+            await capturePhoto();
+            await new Promise(r => setTimeout(r, 4500)); 
+        }
     }
 
-    function countdown(seconds) {
-        return new Promise(resolve => {
-            let t = seconds;
-            const el = document.getElementById('countdown');
-            try { shutterSound.currentTime = 0; shutterSound.play(); } catch(e){}
-            const timer = setInterval(() => {
-                el.innerText = t;
-                if (t <= 0) { clearInterval(timer); el.innerText = ""; resolve(); }
-                t--;
-            }, 800);
-        });
-    }
-
+    /* 🎞️ Chụp lại khung hình video hiện tại và biến nó thành ảnh */
     function saveFrame() {
         const tmp = document.createElement('canvas');
         tmp.width = video.videoWidth; tmp.height = video.videoHeight;
         const tCtx = tmp.getContext('2d');
         tCtx.filter = currentFilter;
-        tCtx.translate(tmp.width, 0); tCtx.scale(-1, 1);
+        tCtx.translate(tmp.width, 0); tCtx.scale(-1, 1); 
         tCtx.drawImage(video, 0, 0);
         const img = new Image(); img.src = tmp.toDataURL();
-        img.onload = () => { photos.push(img); draw(); document.getElementById('count-txt').innerText = photos.length; };
+        img.onload = () => { photos.push(img); draw(); };
     }
 
+    /* 🖼️ Vẽ ảnh lên khung Canvas chính (Thuật toán chống méo ảnh) */
     function draw() {
         const s = 2; 
         canvas.width = (layoutDir === 'v') ? 300 * s : (220 * maxPhotos + 40) * s;
         canvas.height = (layoutDir === 'v') ? (110 * maxPhotos + 60) * s : 350 * s;
         ctx.fillStyle = bg; ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        function roundedRect(c, x, y, w, h, r) {
-            c.beginPath(); c.moveTo(x+r, y); c.arcTo(x+w, y, x+w, y+h, r); c.arcTo(x+w, y+h, x, y+h, r); c.arcTo(x, y+h, x, y, r); c.arcTo(x, y, x+w, y, r); c.closePath();
-        }
-
         photos.forEach((img, i) => {
-            let w = layoutDir==='v' ? (canvas.width - 40*s) : (200*s);
-            let h = layoutDir==='v' ? (100*s) : (canvas.height - 80*s);
-            let x = layoutDir==='v' ? (20*s) : (20*s + i*(w+10*s));
-            let y = layoutDir==='v' ? (20*s + i*(h+10*s)) : (25*s);
-            ctx.save(); roundedRect(ctx, x, y, w, h, 8*s); ctx.clip();
-            
-            let imgR = img.width/img.height, targetR = w/h;
-            let drawW, drawH, drawX, drawY;
-            if(imgR > targetR) { drawH = h; drawW = h * imgR; drawX = x + (w - drawW)/2; drawY = y; }
-            else { drawW = w; drawH = w / imgR; drawX = x; drawY = y + (h - drawH)/2; }
-            
-            ctx.drawImage(img, drawX, drawY, drawW, drawH); ctx.restore();
+            let targetW = layoutDir==='v' ? (canvas.width - 40*s) : (200*s);
+            let targetH = layoutDir==='v' ? (100*s) : (canvas.height - 80*s);
+            let x = layoutDir==='v' ? (20*s) : (20*s + i*(targetW+10*s));
+            let y = layoutDir==='v' ? (20*s + i*(targetH+10*s)) : (25*s);
+
+            ctx.save();
+            ctx.beginPath(); ctx.roundRect(x, y, targetW, targetH, 8*s); ctx.clip();
+
+            let imgRatio = img.width / img.height;
+            let targetRatio = targetW / targetH;
+            let sx, sy, sw, sh;
+
+            if (imgRatio > targetRatio) {
+                sh = img.height; sw = img.height * targetRatio;
+                sx = (img.width - sw) / 2; sy = 0;
+            } else {
+                sw = img.width; sh = img.width / targetRatio;
+                sx = 0; sy = (img.height - sh) / 2;
+            }
+
+            ctx.drawImage(img, sx, sy, sw, sh, x, y, targetW, targetH);
+            ctx.restore();
         });
-        ctx.fillStyle = (bg === '#333333' || bg === '#000000') ? 'white' : '#ff6699';
-        ctx.font = `bold ${12*s}px Quicksand`; ctx.textAlign = 'center';
-        ctx.fillText("Tiệm PhotoBooth nhà Cún ❤️", canvas.width/2, canvas.height - 10*s);
+        
+        ctx.fillStyle = (bg==='#ffffff' || bg==='#fff0f3') ? '#ff6699' : '#fff';
+        ctx.font = `bold ${13*s}px Quicksand`; ctx.textAlign = 'center';
+        ctx.fillText("Tiệm PhotoBooth nhà Cún ❤️", canvas.width/2, canvas.height - 12*s);
     }
 
-    function setLayout(n, dir, btn) { 
-        maxPhotos = n; layoutDir = dir; 
-        document.getElementById('total-txt').innerText = n; 
-        document.querySelectorAll('.layout-btn').forEach(b => { b.classList.remove('selected'); b.style.background = '#fff'; });
-        btn.classList.add('selected'); btn.style.background = 'var(--pink-main)';
-        clearPhotos(); 
+    /* 🐰 Tạo sticker và đưa lên lớp sticker-layer */
+    function addSticker(emoji) {
+        const s = document.createElement('div');
+        s.className = 'draggable'; s.innerText = emoji;
+        s.style.left = '50px'; s.style.top = '50px'; s.style.fontSize = '45px';
+        makeDraggable(s); sLayer.appendChild(s);
     }
 
-    function clearPhotos() { photos = []; document.getElementById('count-txt').innerText = 0; draw(); }
-
-    function addSticker(val) {
-        const size = document.getElementById('size-slider').value;
+    /* ✏️ Thêm văn bản người dùng nhập vào lên ảnh */
+    function addText() {
+        const val = document.getElementById('text-input').value;
+        if (!val) return;
         const s = document.createElement('div');
         s.className = 'draggable'; s.innerText = val;
-        s.style.left = '50px'; s.style.top = '50px'; s.style.fontSize = size + 'px';
+        s.style.left = '40px'; s.style.top = '40px'; 
+        s.style.color = curColor; s.style.fontFamily = curFont; s.style.fontSize = '28px';
         makeDraggable(s); sLayer.appendChild(s);
     }
 
-    function addText() {
-        const txt = document.getElementById('text-input').value; if(!txt) return;
-        const size = document.getElementById('size-slider').value;
-        const s = document.createElement('div');
-        s.className = 'draggable'; s.innerText = txt;
-        s.style.left = '50px'; s.style.top = '50px'; 
-        s.style.fontFamily = curFont; s.style.color = curColor; 
-        s.style.fontSize = (size * 0.8) + 'px';
-        makeDraggable(s); sLayer.appendChild(s);
-    }
-
+    /* 🖐️ Logic xử lý kéo thả cho Sticker và Chữ trên điện thoại/máy tính */
     function makeDraggable(el) {
-        let x = 0, y = 0, isDragging = false;
-        const start = (e) => { 
-            isDragging = false;
+        let x = 0, y = 0, isDrag = false;
+        el.onmousedown = el.ontouchstart = (e) => {
+            isDrag = false;
             const t = e.touches ? e.touches[0] : e;
             x = t.clientX - el.offsetLeft; y = t.clientY - el.offsetTop;
             document.onmousemove = document.ontouchmove = (ev) => {
-                isDragging = true;
+                isDrag = true;
                 const t2 = ev.touches ? ev.touches[0] : ev;
                 el.style.left = (t2.clientX - x) + 'px'; el.style.top = (t2.clientY - y) + 'px';
             };
             document.onmouseup = document.ontouchend = () => {
                 document.onmousemove = document.ontouchmove = null;
-                if (!isDragging) { if (confirm("Xóa nội dung này nhé?")) el.remove(); }
+                if (!isDrag) { if(confirm("Bạn có chắc mún xóa bạn này đi hông?")) el.remove(); }
             };
         };
-        el.onmousedown = el.ontouchstart = start;
     }
 
+    /* 🧼 Các hàm xóa sạch nội dung */
+    function clearAllDecorations() { if(confirm("Xóa hết tất cả sticker đang dán nhé?")) sLayer.innerHTML = ""; }
+    function clearPhotos() { photos = []; draw(); }
+
+    /* 📐 Thay đổi kiểu bố trí khung ảnh */
+    function setLayout(n, d, btn) {
+        maxPhotos = n; layoutDir = d;
+        document.querySelectorAll('.layout-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        clearPhotos();
+    }
+
+    /* 🔡 Cập nhật nút Font chữ đang chọn */
+    function updateFontBtn(btn) {
+        document.querySelectorAll('#font-list .filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+    }
+
+    /* 💾 Tải ảnh kết quả về máy dưới dạng file PNG */
     function downloadHighRes() {
-        const final = document.createElement('canvas'); final.width = canvas.width; final.height = canvas.height;
-        const fCtx = final.getContext('2d'); fCtx.drawImage(canvas, 0, 0);
-        const stickers = document.querySelectorAll('.draggable');
-        const ratio = canvas.width / sLayer.offsetWidth;
-        stickers.forEach(s => {
-            fCtx.font = `${parseInt(window.getComputedStyle(s).fontSize)*ratio}px ${s.style.fontFamily || 'Quicksand'}`;
-            fCtx.fillStyle = s.style.color || 'black';
-            fCtx.fillText(s.innerText, parseInt(s.style.left)*ratio, (parseInt(s.style.top)+25)*ratio);
-        });
-        const link = document.createElement('a'); link.download = 'tiem-nha-cun.png'; link.href = final.toDataURL(); link.click();
+        const link = document.createElement('a'); link.download = 'nha-cun-photobooth.png';
+        link.href = canvas.toDataURL(); link.click();
     }
 
-    ['#ffffff','#fff0f3','#ffeaeb','#ffeef8','#fde2ff','#e6e6fa','#e0ffff','#f0ffff','#f0fff0','#fffaf0','#fffacd','#ffefd5','#ffe4e1','#ffdad9','#333333'].forEach(c => {
+    /* 🌈 Khởi tạo bảng màu nền và màu chữ */
+    const colors = ['#ffffff','#fff0f3','#ffeaeb','#fde2ff','#e6e6fa','#e0ffff','#333333','#000000','#ff5e5e','#5eafff'];
+    colors.forEach(c => {
         const d = document.createElement('div'); d.className = 'dot'; d.style.background = c;
-        d.onclick=()=>{ bg=c; draw(); }; document.getElementById('bg-list').appendChild(d);
+        d.onclick = () => { bg = c; draw(); }; document.getElementById('bg-list').appendChild(d);
         const t = document.createElement('div'); t.className = 'dot'; t.style.background = c;
         t.onclick = () => curColor = c; document.getElementById('text-color-list').appendChild(t);
     });
 
-    ['❤️','✨','🎀','🌸','🧸','🐾','🍓','🌈','🍭','📷','🐶','🐱','🎈','🌟','🍕','🍦','💖','🍑','🍪','🎉','🐥','☁️','🧁','💎'].forEach(e => {
-        const s = document.createElement('span'); s.className = 'sticker-item'; s.innerText = e; s.onclick=()=>addSticker(e);
-        document.getElementById('sticker-list').appendChild(s);
+    /* 🐰 Khởi tạo danh sách các Sticker có sẵn */
+    const stickers = ['❤️','✨','🎀','🌸','🧸','🐾','🍓','🌈','🍭','📷','🐶','🐱','🎈','🌟','💖','🍑','🍪','🎉','🐥','☁️'];
+    stickers.forEach(s => {
+        const span = document.createElement('span'); span.className = 'sticker-item'; span.innerText = s;
+        span.onclick = () => addSticker(s); document.getElementById('sticker-list').appendChild(span);
     });
 
+    /* 🏁 Thiết lập mặc định khi vừa mở trang: 4 ảnh dọc */
     setLayout(4, 'v', document.querySelectorAll('.layout-btn')[2]);
 </script>
-</body>
-</html>
 </body>
 </html>
