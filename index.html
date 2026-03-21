@@ -9,10 +9,10 @@
     
     <style>
         :root { 
-            --pink-primary: #ffafcc; /* Hồng pastel chủ đạo */
+            --pink-primary: #ffafcc;
             --pink-soft: #ffcad4; 
             --pink-light: #fef2f4;
-            --bg-site: #fff5f7; /* Nền trang hồng cực nhạt */
+            --bg-site: #fff5f7;
             --gray-light: #f8f9fa;
         }
 
@@ -23,6 +23,7 @@
             background: var(--bg-site); 
             display: flex; flex-direction: column; align-items: center; 
             color: #5d5d5d;
+            overflow-x: hidden;
         }
 
         .main-container { 
@@ -31,7 +32,6 @@
             padding: 20px 15px;
         }
 
-        /* --- HEADER & LOGO --- */
         .profile-section { text-align: center; margin-bottom: 20px; position: relative; width: 100%; }
         .logo-wrapper {
             width: 100px; height: 100px; 
@@ -56,7 +56,6 @@
             50% { transform: rotate(10deg); }
         }
 
-        /* --- THANH TIẾN TRÌNH --- */
         .step-bar {
             display: flex; justify-content: space-between; align-items: center;
             width: 95%; position: relative; margin: 25px 0;
@@ -93,14 +92,15 @@
         .flash-active { animation: flash-anim 0.3s; }
         @keyframes flash-anim { 0% { opacity: 1; } 100% { opacity: 0; } }
 
-        #decor-display-area { margin-bottom: 20px; display: flex; justify-content: center; }
+        #decor-display-area { margin-bottom: 20px; display: flex; justify-content: center; touch-action: none; }
 
         #result-area { 
             background: white; padding: 10px; position: relative; 
             width: fit-content; margin: 0 auto; border-radius: 12px;
             box-shadow: 0 15px 45px rgba(255, 175, 204, 0.25);
+            touch-action: none;
         }
-        canvas { max-width: 100%; border-radius: 5px; display: block; height: auto !important; }
+        canvas { max-width: 100%; border-radius: 5px; display: block; height: auto !important; touch-action: none; }
         #sticker-layer { position: absolute; inset: 10px; pointer-events: none; z-index: 5; overflow: hidden; border-radius: 5px; }
         .draggable { position: absolute; pointer-events: auto; cursor: move; touch-action: none; white-space: nowrap; user-select: none; }
         .draggable.selected { border: 2px dashed var(--pink-primary); border-radius: 5px; background: rgba(255,255,255,0.3); }
@@ -133,6 +133,13 @@
             box-shadow: 0 3px 10px rgba(0,0,0,0.03);
         }
         .opt-btn.active { background: var(--pink-primary); color: white; transform: scale(1.05); }
+
+        .frame-thumb {
+            width: 80px; height: 110px; object-fit: cover; border-radius: 10px;
+            border: 2px solid white; cursor: pointer; transition: 0.2s;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        .frame-thumb.active { border-color: var(--pink-primary); transform: scale(1.1); }
         
         .color-dot { 
             width: 42px; height: 42px; border-radius: 50%; border: 3px solid white; 
@@ -151,8 +158,6 @@
         .size-btn { width: 40px; height: 40px; border-radius: 50%; border: none; background: var(--pink-light); font-weight: bold; color: var(--pink-primary); cursor: pointer; }
 
         .hint-text { font-size: 11px; color: #bbb; text-align: center; margin-top: 10px; line-height: 1.5; }
-
-        /* Custom range input styling */
         .range-input { width: 100%; accent-color: var(--pink-primary); margin: 10px 0; }
     </style>
 </head>
@@ -186,7 +191,6 @@
             <button class="opt-btn active" onclick="setLayout(4,'v',this)">4 Ảnh dọc (Hot)</button>
             <button class="opt-btn" onclick="setLayout(4,'h',this)">4 Ảnh ngang</button>
         </div>
-        
         <button class="btn btn-primary" onclick="goToStep(2)">TIẾP THEO: CHỌN MÀU NỀN ➡️</button>
     </section>
 
@@ -230,6 +234,13 @@
         <p class="status-msg">Trang trí ảnh thôi nào!</p>
         <div id="decor-display-area"></div>
         
+        <div id="frame-selector-section" style="display:none;">
+            <span class="slider-title">🖼️ Khung ảnh thiết kế (Chỉ cho 4 ảnh dọc)</span>
+            <div class="slider" id="frame-list">
+                <button class="opt-btn active" onclick="setDesignFrame('', this)">Mặc định (Trơn)</button>
+            </div>
+        </div>
+
         <span class="slider-title">📏 Độ dày khung viền</span>
         <div style="padding: 0 10px; margin-bottom: 20px;">
             <input type="range" class="range-input" min="5" max="50" value="20" oninput="borderSize=parseInt(this.value); draw();">
@@ -285,11 +296,21 @@
 <script>
     let photos = [], photoStyles = [], maxPhotos = 4, layoutDir = 'v', bg = '#ffffff', curFont = 'Quicksand', curColor = '#ffafcc', currentFilter = 'none', track = null, selectedEl = null;
     let isDraggingPhoto = false, activePhotoIdx = -1, lastTouchX = 0, lastTouchY = 0, lastDist = 0;
-    let borderSize = 20; // Độ dày khung viền mặc định
+    let borderSize = 20;
+    let designFrameImg = null;
+
+    const frameFiles = [
+        '68d0dd9bb3a08.png', '68d8f10969679.png', '68dd4388c0191.png', '68e73af797a67.png', '68ecec87142ee.png',
+        '685a41b84c9e3.png', '686f44ca41c86.png', '686f84a47a36d.png', '686fe53db6dfc.png', '687cd152e026d.png',
+        '689b4afcb36f1.png', '689da03a3127c.png', '692c31d942db2.png', '692d81cfb1e9f.png', '692d8418563a1.png',
+        '692ed2cc19d03.png', '692edb205f3f0.png', '6852d138ea7bf.png', '6852d238938b9.png', '6854e5408664d.png',
+        '6864a24e4b7e2.png', '6873ac02ab5a1.png', '6921c4526b985.png', '6921c4677562b.png', '68529b5bf0b08.png',
+        '68529bdb96806.png', '68529c57c0a28.png', '68529ccce2380.png', '69310e3a32eac.png', '69567d8355fe2.png',
+        '687779c79d107.png', '689801c6ac302.png'
+    ];
 
     const canvas = document.getElementById('canvas'), ctx = canvas.getContext('2d'), video = document.getElementById('video'), sLayer = document.getElementById('sticker-layer'), resArea = document.getElementById('result-area');
 
-    // Khởi tạo camera
     navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } })
         .then(s => { video.srcObject = s; track = s.getVideoTracks()[0]; })
         .catch(() => alert("Bạn ơi, bật camera thì mới chụp được nè! ❤️"));
@@ -303,6 +324,8 @@
         
         if(step == 3) document.getElementById('max-hint').innerText = maxPhotos;
         if(step == 4 || step == 5) {
+            // Hiện chọn khung nếu chọn 4 ảnh dọc
+            document.getElementById('frame-selector-section').style.display = (maxPhotos === 4 && layoutDir === 'v') ? 'block' : 'none';
             draw();
             resArea.style.display = "block";
             const target = step == 4 ? 'decor-display-area' : 'final-display-area';
@@ -312,6 +335,96 @@
             resArea.style.display = "none";
         }
     }
+
+    function setDesignFrame(fileName, btn) {
+        document.querySelectorAll('#frame-list .opt-btn, #frame-list img').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        if(!fileName) {
+            designFrameImg = null;
+            draw();
+        } else {
+            const img = new Image();
+            img.src = fileName;
+            img.onload = () => { designFrameImg = img; draw(); };
+        }
+    }
+
+    // Khởi tạo danh sách khung
+    const frameList = document.getElementById('frame-list');
+    frameFiles.forEach(file => {
+        const img = document.createElement('img');
+        img.src = file;
+        img.className = 'frame-thumb';
+        img.onclick = () => setDesignFrame(file, img);
+        frameList.appendChild(img);
+    });
+
+    function draw() {
+        const s = 2; 
+        const b = borderSize * s; 
+        
+        canvas.width = (layoutDir === 'v') ? 300 * s : (220 * maxPhotos + 40) * s;
+        canvas.height = (layoutDir === 'v') ? (110 * maxPhotos + 60) * s : 350 * s;
+        
+        ctx.fillStyle = bg; 
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        photos.forEach((img, i) => {
+            const style = photoStyles[i] || { x: 0, y: 0, scale: 1 };
+            let tw = layoutDir==='v' ? (canvas.width - b*2) : (200*s);
+            let th = layoutDir==='v' ? (100*s) : (canvas.height - 80*s);
+            let x = layoutDir==='v' ? (b) : (20*s + i*(tw+10*s));
+            let y = layoutDir==='v' ? (20*s + i*(th+10*s)) : (25*s);
+            
+            const radius = 6 * s;
+            ctx.save();
+            ctx.beginPath();
+            ctx.moveTo(x + radius, y);
+            ctx.lineTo(x + tw - radius, y);
+            ctx.quadraticCurveTo(x + tw, y, x + tw, y + radius);
+            ctx.lineTo(x + tw, y + th - radius);
+            ctx.quadraticCurveTo(x + tw, y + th, x + tw - radius, y + th);
+            ctx.lineTo(x + radius, y + th);
+            ctx.quadraticCurveTo(x, y + th, x, y + th - radius);
+            ctx.lineTo(x, y + radius);
+            ctx.quadraticCurveTo(x, y, x + radius, y);
+            ctx.closePath();
+            ctx.clip();
+
+            let imgRatio = img.width / img.height;
+            let targetRatio = tw / th;
+            let dw, dh;
+
+            if (imgRatio > targetRatio) {
+                dh = th; dw = th * imgRatio;
+            } else {
+                dw = tw; dh = tw / imgRatio;
+            }
+
+            dw *= style.scale;
+            dh *= style.scale;
+
+            let dx = x + (tw - dw) / 2 + (style.x * s);
+            let dy = y + (th - dh) / 2 + (style.y * s);
+
+            ctx.drawImage(img, 0, 0, img.width, img.height, dx, dy, dw, dh);
+            ctx.restore();
+        });
+
+        // Vẽ Frame thiết kế nếu có (đè lên ảnh)
+        if (designFrameImg && maxPhotos === 4 && layoutDir === 'v') {
+            ctx.drawImage(designFrameImg, 0, 0, canvas.width, canvas.height);
+        } else {
+            // Vẽ text mặc định nếu KHÔNG dùng khung thiết kế
+            ctx.fillStyle = (bg==='#ffffff' || bg==='#fff5f7' || bg==='#ffcad4') ? '#ffafcc' : '#ffffff';
+            ctx.font = `bold ${13*s}px Quicksand`; 
+            ctx.textAlign = 'center';
+            ctx.fillText("Tiệm PhotoBooth nhà Cún ❤️", canvas.width/2, canvas.height - 12*s);
+        }
+    }
+
+    // --- Giữ nguyên các hàm capturePhoto, startAutoCapture, handleUpload, makeDrag, download... ---
+    // (Lưu ý: Bạn nên copy lại các hàm capture và control từ code cũ của bạn vào đây)
 
     function handleUpload(input) {
         if (!input.files || input.files.length === 0) return;
@@ -380,65 +493,6 @@
         };
     }
 
-    function draw() {
-        const s = 2; // Tăng độ nét
-        const b = borderSize * s; // Áp dụng borderSize linh hoạt
-        
-        canvas.width = (layoutDir === 'v') ? 300 * s : (220 * maxPhotos + 40) * s;
-        canvas.height = (layoutDir === 'v') ? (110 * maxPhotos + 60) * s : 350 * s;
-        
-        ctx.fillStyle = bg; 
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        
-        photos.forEach((img, i) => {
-            const style = photoStyles[i] || { x: 0, y: 0, scale: 1 };
-            let tw = layoutDir==='v' ? (canvas.width - b*2) : (200*s);
-            let th = layoutDir==='v' ? (100*s) : (canvas.height - 80*s);
-            let x = layoutDir==='v' ? (b) : (20*s + i*(tw+10*s));
-            let y = layoutDir==='v' ? (20*s + i*(th+10*s)) : (25*s);
-            
-            const radius = 6 * s;
-            ctx.save();
-            ctx.beginPath();
-            ctx.moveTo(x + radius, y);
-            ctx.lineTo(x + tw - radius, y);
-            ctx.quadraticCurveTo(x + tw, y, x + tw, y + radius);
-            ctx.lineTo(x + tw, y + th - radius);
-            ctx.quadraticCurveTo(x + tw, y + th, x + tw - radius, y + th);
-            ctx.lineTo(x + radius, y + th);
-            ctx.quadraticCurveTo(x, y + th, x, y + th - radius);
-            ctx.lineTo(x, y + radius);
-            ctx.quadraticCurveTo(x, y, x + radius, y);
-            ctx.closePath();
-            ctx.clip();
-
-            let imgRatio = img.width / img.height;
-            let targetRatio = tw / th;
-            let dw, dh;
-
-            if (imgRatio > targetRatio) {
-                dh = th; dw = th * imgRatio;
-            } else {
-                dw = tw; dh = tw / imgRatio;
-            }
-
-            dw *= style.scale;
-            dh *= style.scale;
-
-            let dx = x + (tw - dw) / 2 + (style.x * s);
-            let dy = y + (th - dh) / 2 + (style.y * s);
-
-            ctx.drawImage(img, 0, 0, img.width, img.height, dx, dy, dw, dh);
-            ctx.restore();
-        });
-
-        ctx.fillStyle = (bg==='#ffffff' || bg==='#fff5f7' || bg==='#ffcad4') ? '#ffafcc' : '#ffffff';
-        ctx.font = `bold ${13*s}px Quicksand`; 
-        ctx.textAlign = 'center';
-        ctx.fillText("Tiệm PhotoBooth nhà Cún ❤️", canvas.width/2, canvas.height - 12*s);
-    }
-
-    // --- LOGIC ĐIỀU KHIỂN CĂN CHỈNH ẢNH ---
     function initPhotoControl() {
         canvas.onwheel = (e) => {
             if (activePhotoIdx !== -1) {
@@ -514,7 +568,7 @@
 
         canvas.ontouchmove = (e) => {
             if (!isDraggingPhoto || activePhotoIdx === -1) return;
-            e.preventDefault();
+            if(e.cancelable) e.preventDefault();
             
             if (e.touches.length === 1) {
                 const touch = e.touches[0];
@@ -573,16 +627,29 @@
             selectedEl = el; el.classList.add('selected');
             const t = e.touches ? e.touches[0] : e;
             x = t.clientX - el.offsetLeft; y = t.clientY - el.offsetTop;
-            document.onmousemove = document.ontouchmove = (ev) => {
+            
+            const moveHandler = (ev) => {
+                if(ev.cancelable) ev.preventDefault();
                 const t2 = ev.touches ? ev.touches[0] : ev;
                 el.style.left = (t2.clientX - x) + 'px'; el.style.top = (t2.clientY - y) + 'px';
             };
-            document.onmouseup = document.ontouchend = () => { document.onmousemove = document.ontouchmove = null; };
+            
+            const upHandler = () => {
+                document.removeEventListener('mousemove', moveHandler);
+                document.removeEventListener('mouseup', upHandler);
+                document.removeEventListener('touchmove', moveHandler);
+                document.removeEventListener('touchend', upHandler);
+            };
+
+            document.addEventListener('mousemove', moveHandler, {passive: false});
+            document.addEventListener('mouseup', upHandler);
+            document.addEventListener('touchmove', moveHandler, {passive: false});
+            document.addEventListener('touchend', upHandler);
         };
     }
 
     function clearStickers() { if(confirm("Dọn sạch trang trí?")) { sLayer.innerHTML = ""; selectedEl = null; } }
-    function resetTiem() { if(confirm("Chụp lại từ đầu nhé?")) { photos = []; photoStyles = []; sLayer.innerHTML = ""; goToStep(1); } }
+    function resetTiem() { if(confirm("Chụp lại từ đầu nhé?")) { photos = []; photoStyles = []; sLayer.innerHTML = ""; designFrameImg = null; goToStep(1); } }
     function setLayout(n,d,btn) {
         maxPhotos = n; layoutDir = d;
         document.querySelectorAll('#block1 .opt-btn').forEach(b => b.classList.remove('active'));
@@ -597,21 +664,27 @@
         draw();
         const s = 2; 
         const rect = sLayer.getBoundingClientRect();
-        const scaleX = canvas.width / rect.width;
         const items = sLayer.querySelectorAll('.draggable');
+        
         items.forEach(item => {
             const style = window.getComputedStyle(item);
-            const fontSize = parseFloat(style.fontSize) * scaleX;
+            const leftPct = parseFloat(item.style.left) / rect.width;
+            const topPct = parseFloat(item.style.top) / rect.height;
+            
+            const fontSize = parseFloat(style.fontSize) * s; 
             const font = `${style.fontWeight} ${fontSize}px ${style.fontFamily}`;
             const color = style.color;
             const text = item.innerText;
-            const itemRect = item.getBoundingClientRect();
-            const lx = (itemRect.left - rect.left) * scaleX;
-            const ly = (itemRect.top - rect.top) * (canvas.height / rect.height) + (fontSize * 0.8);
-            ctx.font = font; ctx.fillStyle = color; ctx.fillText(text, lx, ly);
+            
+            const lx = leftPct * canvas.width;
+            const ly = topPct * canvas.height + (fontSize * 0.85);
+            
+            ctx.font = font; ctx.fillStyle = color; ctx.textAlign = "left";
+            ctx.fillText(text, lx, ly);
         });
+
         const link = document.createElement('a'); link.download = 'tiem-nha-cun.png';
-        link.href = canvas.toDataURL('image/png'); link.click();
+        link.href = canvas.toDataURL('image/png', 1.0); link.click();
         draw();
     }
 
@@ -625,9 +698,10 @@
 
     const stickerPack = ['❤️','✨','🎀','🌸','🧸','🐾','🍓','🌈','🍭','📷','🐶','🐱','🌟','💖','🎉','🐰','🦄','🍩','🍪','🍒','🎈'];
     stickerPack.forEach(s => {
-        const span = document.createElement('span'); span.className = 'sticker-item'; span.innerText = s;
-        span.onclick = () => addSticker(s); document.getElementById('sticker-list').appendChild(span);
+        const item = document.createElement('span'); item.className = 'sticker-item'; item.innerText = s;
+        item.onclick = () => addSticker(s); document.getElementById('sticker-list').appendChild(item);
     });
+
 </script>
 </body>
 </html>
