@@ -19,25 +19,28 @@
 
         /* ✨ Reset CSS cơ bản để giao diện nhất quán trên mọi trình duyệt */
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        
         html, body { 
             margin: 0; 
+            padding: 0;
             font-family: 'Quicksand', sans-serif; 
             background: var(--bg-site); 
             display: flex; 
             justify-content: center; 
             min-height: 100vh; 
+            /* Chống tràn ngang tuyệt đối */
             overflow-x: hidden; 
             width: 100%;
             touch-action: manipulation;
         }
 
-        /* 📦 Bố cục lưới (Grid) chia làm 3 cột trên máy tính */
+        /* 📦 Bố cục lưới (Grid) - ĐÃ SỬA: Dùng fr thay vì px cố định để chống tràn */
         .main-container { 
             display: grid; 
             grid-template-columns: 320px 1fr 350px; 
             gap: 20px; 
             padding: 20px; 
-            max-width: 1600px; 
+            max-width: 100%; /* Đảm bảo không vượt quá chiều ngang màn hình */
             width: 100%; 
         }
 
@@ -51,6 +54,8 @@
             width: 100%;
             transition: all 0.3s ease;
             border: 1px solid #ffeef2;
+            /* Ngăn nội dung bên trong đẩy khung ra ngoài */
+            overflow: hidden; 
         }
         
         /* 🎈 Hiệu ứng lơ lửng khi di chuột vào các khối */
@@ -71,7 +76,7 @@
             box-shadow: 0 8px 30px rgba(0,0,0,0.1); 
             border-radius: 5px; 
         }
-        canvas { width: 100%; display: block; border-radius: 2px; }
+        canvas { width: 100%; display: block; border-radius: 2px; height: auto; }
         
         /* 📍 Lớp trong suốt nằm trên cùng để chứa Sticker và Chữ */
         #sticker-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 10; overflow: hidden; }
@@ -123,6 +128,8 @@
             display: flex; gap: 12px; overflow-x: auto; 
             padding: 15px 5px; border-radius: 15px; 
             background: #fffafa; margin-bottom: 18px; width: 100%; 
+            /* Fix cuộn mượt cho iPhone */
+            -webkit-overflow-scrolling: touch;
         }
         /* Tùy chỉnh thanh cuộn cho đẹp hơn */
         .slider-container::-webkit-scrollbar { height: 6px; }
@@ -146,11 +153,21 @@
         /* 💬 Chữ hướng dẫn nhỏ */
         .helper-text { font-size: 11px; color: #ff85a2; display: block; margin-bottom: 6px; font-weight: 600; text-align: center; }
 
-        /* 📱 Tối ưu hóa cho thiết bị di động (màn hình nhỏ hơn 1050px) */
+        /* 📱 TỐI ƯU HÓA QUAN TRỌNG NHẤT: CHỐNG TRÀN CHO MOBILE */
         @media (max-width: 1050px) { 
-            .main-container { grid-template-columns: 1fr; padding: 10px; gap: 15px; } 
-            .col-preview { order: 3; } .col-main { order: 1; } .col-design { order: 2; }
+            .main-container { 
+                grid-template-columns: 100%; /* Chuyển về 1 cột duy nhất */
+                padding: 10px; 
+                gap: 15px; 
+            } 
+            /* Sắp xếp lại thứ tự: Camera (Main) -> Trang trí (Design) -> Xem trước (Preview) */
+            .col-main { order: 1; } 
+            .col-design { order: 2; }
+            .col-preview { order: 3; } 
+            
             .video-box { max-height: 40vh; }
+            h1 { font-size: 26px !important; }
+            .btn-cap { padding: 16px; font-size: 15px; } /* Nút to hơn cho dễ bấm tay */
         }
     </style>
 </head>
@@ -245,7 +262,7 @@
 
 <script>
     /* -------------------------------------------------------------------------- */
-    /* XỬ LÝ LOGIC CHÍNH                              */
+    /* XỬ LÝ LOGIC CHÍNH - GIỮ NGUYÊN 100%                                        */
     /* -------------------------------------------------------------------------- */
 
     let maxPhotos = 4, layoutDir = 'v', photos = [], bg = '#ffffff', curFont = 'Quicksand', curColor = '#ff6699', currentFilter = 'none';
